@@ -1,4 +1,47 @@
 
+
+
+#' SBC class
+#' 
+#' @description Generator class for creating new instances of the \code{SBC} R6 class.
+#'
+#'
+#' @format An R6 object of type \code{SBC}
+#' 
+#' 
+#' @section Methods:
+#' \describe{
+#' \item{\code{$new(data, params, modeled_variable, sampling)}}{Create a new SBC object, passing in functions to generate data and parameters, and draw samples. 
+#'     \describe{
+#'         \item{\code{data = function(seed) {...}}}{A function with signature \code{function(seed)} that returns a named list.}
+#'         \item{\code{params = function(seed, data) {...}}}{A function with signature \code{function(seed, data)} that returns a named list.}
+#'         \item{\code{modeled_variable = function(seed, data, params) {...}}}{A function with signature \code{function(seed, data, params)} that returns a named list.}
+#'         \item{\code{sampling = function(seed, data, params, modeled_variable) {...}}}{A function with signature \code{function(seed, data, params, modeled_variable)} that returns a \code{stanfit} object.}
+#'     }}
+#' \item{\code{$calibrate(N, L)}}{Run calibration procedure using \code{N} simulations of (thinned) sample size \code{L}.}
+#' \item{\code{$summary(var = NULL)}}{Summarize results of a previous calibration. Optionally specify a parameter \code{var}.}
+#' \item{\code{$plot(var = NULL)}}{Plot a histogram of ranks from a previous calibration. Optionally specify a parameter \code{var}.}
+#' }
+
+#' 
+#' @section Fields:
+#' \describe{
+#' \item{\code{$calibrations}}{A list of \code{N} calibrations created by calling \code{$calibrate}}
+#' } 
+#' 
+#' 
+#' 
+#' @importFrom R6 R6Class
+#' 
+#' @examples 
+#' \dontrun{
+#' sbc <- SBC$new(data = function(seed) {list(n = 10)}, 
+#'                params = function(seed, data) {list(mu = rnorm(1))}, 
+#'                modeled_variable = function(seed, data, params) {list(y = rnorm(data$n, mu, 1)}, 
+#'                sampling = function(seed, data, params, modeled_variable {
+#'                    stan_object <- NULL # usually a call to rstan::sampling() 
+#'                    stan_object
+#'                })}
 #' @export
 SBC <- R6::R6Class(
   classname = 'SBC',
@@ -95,10 +138,10 @@ SBC <- R6::R6Class(
   ),
   public = list(
     initialize = 
-      function(data = NULL, 
-               params = NULL, 
-               modeled_variable = NULL,
-               sampling = NULL) {
+      function(data = function(seed) list(), 
+               params = function(seed, data) list(), 
+               modeled_variable = function(seed, data, params) list(),
+               sampling) {
         private$.data_fun <- data
         private$.params_fun <- params
         private$.modeled_variable_fun <- modeled_variable
@@ -214,6 +257,8 @@ SBC <- R6::R6Class(
   portable = TRUE,
   lock_class = FALSE,
   cloneable = TRUE)
-             
-             
-             
+
+
+
+
+

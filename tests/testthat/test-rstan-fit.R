@@ -1,21 +1,18 @@
 test_that("rstan fit", {
-  library(rstan)
-  
+  require(rstan)
   rstan::rstan_options("auto_write" = TRUE)
   m <- NULL
-  if (interactive()) {
-    stan_file_loc <- here::here('inst', 'stan', 'normal_group_means.stan')
-    if (file.exists(stan_file_loc)) {
-      m <- stan_model(file = stan_file_loc, save_dso = TRUE)
-    }
+  stan_file_loc <- here::here('inst', 'stan', 'normal_group_means.stan')
+  if (file.exists(stan_file_loc)) {
+    m <- rstan::stan_model(file = stan_file_loc, save_dso = TRUE)
   }
   if (is.null(m)) {
-    m <- stan_model(file = system.file('stan', 'normal_group_means.stan', package = 'sbcrs'))
+    m <- rstan::stan_model(file = system.file('stan', 'normal_group_means.stan', package = 'sbcrs'))
   }
   
   new_sbc_for_testing <- function(.n_obs, .n_groups, .n_types) {
     stopifnot(.n_groups > 0L && .n_types > 0L)
-    sbc <- SBC$new(
+    SBC$new(
       data = function(seed) {
         set.seed(seed + 10)
         n_obs <- .n_obs
@@ -43,10 +40,8 @@ test_that("rstan fit", {
         modeled_variable
       },
       sampling = function(seed, data, params, modeled_variable, iters) {
-        stan_sample_shhhh <- purrr::quietly(sampling)
-        result <- stan_sample_shhhh(m, data = c(data, modeled_variable), seed = seed,
+        samples <- rstan::sampling(m, data = c(data, modeled_variable), seed = seed,
                                     chains = 1, iter = 2 * iters, warmup = iters)
-        samples <- result$result
         samples
       })
   }
@@ -61,7 +56,7 @@ test_that("rstan fit", {
     sbc$calibrate(N, L)
     testthat::expect_length(sbc$calibrations, N)
     purrr::walk(sbc$calibrations, ~check_param_len(.x))
-    testthat::expect_s3_class(purrr:::quietly(sbc$summary)()$result, 'data.frame')
+    testthat::expect_s3_class(sbc$summary(), 'data.frame')
     gg <- sbc$plot()
     testthat::expect_s3_class(gg, 'ggplot')
     invisible(NULL)
