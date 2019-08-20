@@ -1,6 +1,10 @@
 ^LICENSE\.md$
 ^.*\.Rproj$
 ^\.Rproj\.user$
-^sbcrs/inst/stan/*\.rds$
 ^doc$
 ^Meta$
+^inst.*stan.*funnel\.rds$
+^inst.*stan.*funnel_reparameterized\.rds$
+^inst.*stan.*normal_group_means\.rds$
+^inst.*stan.*rstan_sbc_example\.rds$
+^inst.*stan.*rstan_sbc_example_original\.rds$
