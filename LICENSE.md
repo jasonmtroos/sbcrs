@@ -552,7 +552,7 @@ to the start of each source file to most effectively state the exclusion of warr
 and each file should have at least the “copyright” line and a pointer to
 where the full notice is found.
 
-    <one line to give the program's name and a brief idea of what it does.>
+    R package for implementing (S)imulation (B)ased (C)alibration using (R)ank (S)tatistics using the approach described in https://arxiv.org/abs/1804.06788
     Copyright (C) 2019 Jason M.T. Roos
 
     This program is free software: you can redistribute it and/or modify
