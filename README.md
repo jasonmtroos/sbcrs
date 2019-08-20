@@ -46,7 +46,8 @@ To build the package vignettes, install the package using:
 devtools::install_github("jasonmtroos/sbcrs", build_vignettes = TRUE)
 ```
 
-The package vignettes are a useful starting point.
+The package vignettes are a useful starting point for understanding what
+this package does:
 
   - `intro-to-sbc` provides an overview to simulation-based calibration,
     and the features of the SBC package
@@ -57,3 +58,91 @@ The package vignettes are a useful starting point.
     using this package, shows the rank statistics are the same, and
     provides a basis for understanding the different design philosophies
     behind the two approaches.
+
+It is also useful to understand why this package does what it does. For
+that, see: [Validating Bayesian Inference Algorithms with
+Simulation-Based Calibration,
+arXiv:1804.06788](https://arxiv.org/abs/1804.06788).
+
+## A Simple Illustration of What This Thing Does
+
+``` r
+library(rstan)
+#> Loading required package: StanHeaders
+#> Loading required package: ggplot2
+#> rstan (Version 2.19.2, GitRev: 2e1f913d3ca3)
+#> For execution on a local, multicore CPU with excess RAM we recommend calling
+#> options(mc.cores = parallel::detectCores()).
+#> To avoid recompilation of unchanged Stan programs, we recommend calling
+#> rstan_options(auto_write = TRUE)
+my_model <- stan_model(model_code = "
+data {
+  vector[100] y;
+  vector[100] x;
+  vector[100] w;
+}
+parameters {
+  real alpha;
+  real beta;
+  real<lower = 0> sigma;
+}
+model {
+  alpha ~ std_normal();
+  beta ~ std_normal();
+  sigma ~ exponential(1);
+  y ~ normal(alpha + beta * x + beta^2 * w, sigma);
+}
+")
+```
+
+How can we be sure this Stan model is able to sample from the posterior
+distribution of `alpha`, `beta`, and `sigma`? [Read the
+paper\!](https://arxiv.org/abs/1804.06788)
+
+Here’s the code:
+
+``` r
+library(sbcrs)
+doParallel::registerDoParallel(parallel::detectCores())
+x <- sample.int(5, 100, replace = TRUE)
+w <- rnorm(100)
+my_sbc <- SBC$new(
+  data = function(seed) {
+    list(w = w, x = x)
+  },
+  params = function(seed, data) {
+    set.seed(seed + 1e6)
+    alpha <- rnorm(1)
+    beta <- rnorm(1)
+    sigma <- rexp(1)
+    list(alpha = alpha, beta = beta, sigma = sigma)
+  },
+  modeled_variable = function(seed, data, params) {
+    set.seed(seed + 2e6)
+    list(y = rnorm(100, params$alpha + 
+                     params$beta * data$x + 
+                     params$beta^2 * data$w, params$sigma))
+  },
+  sampling = function(seed, data, params, modeled_variable, iters) {
+    data_for_stan <- c(data, modeled_variable)
+    rstan::sampling(my_model, data = data_for_stan, seed = seed,
+                    chains = 1, iter = 2 * iters, warmup = iters,
+                    refresh = 200)
+  }
+)
+my_sbc$calibrate(N = 128, L = 30, keep_stan_fit = FALSE)
+my_sbc$plot()
+```
+
+<img src="man/figures/README-github-example-1.png" width="100%" />
+
+``` r
+my_sbc$summary()
+#> 
+#> 
+#>         iq expected.outside actual.outside
+#>  0.5000000       0.50000000     0.32258065
+#>  0.9666667       0.03333333     0.06451613
+```
+
+Looks good\!

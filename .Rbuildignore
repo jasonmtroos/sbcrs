@@ -10,3 +10,4 @@
 ^README\.Rmd$
 ^doc$
 ^Meta$
+^man.*figures.*README-github-example.*\.png$
