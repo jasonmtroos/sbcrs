@@ -40,7 +40,13 @@ You can install the development version from
 devtools::install_github("jasonmtroos/sbcrs")
 ```
 
-The package vignettes are a useful starting point:
+To build the package vignettes, install the package using:
+
+``` r
+devtools::install_github("jasonmtroos/sbcrs", build_vignettes = TRUE)
+```
+
+The package vignettes are a useful starting point.
 
   - `intro-to-sbc` provides an overview to simulation-based calibration,
     and the features of the SBC package
