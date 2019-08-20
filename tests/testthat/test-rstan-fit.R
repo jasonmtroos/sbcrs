@@ -47,23 +47,31 @@ test_that("rstan fit", {
   }
   
   check_param_len <- function(calib) {
-    param_names <- names(calib$quantiles)
-    purrr::walk(param_names, ~testthat::expect_equal(length(calib$quantiles[[.x]]), 
+    param_names <- names(calib$ranks)
+    purrr::walk(param_names, ~testthat::expect_equal(length(calib$ranks[[.x]]), 
                                                      length(calib$params[[.x]])))
   }
-  tests_for_sbc <- function(sbc, N, L) {
+  tests_for_sbc <- function(sbc, N, L, keep_stan_fit = TRUE) {
     testthat::expect_length(sbc$calibrations, 0)
-    sbc$calibrate(N, L)
+    sbc$calibrate(N, L, keep_stan_fit)
     testthat::expect_length(sbc$calibrations, N)
     purrr::walk(sbc$calibrations, ~check_param_len(.x))
     testthat::expect_s3_class(sbc$summary(), 'data.frame')
     gg <- sbc$plot()
     testthat::expect_s3_class(gg, 'ggplot')
+    if (keep_stan_fit) {
+      testthat::expect_s4_class(sbc$calibrations[[1]]$samples, 'stanfit')
+    } else {
+      testthat::expect_null(sbc$calibrations[[1]]$samples)
+    }
     invisible(NULL)
   }
   sbc <- new_sbc_for_testing(0, 1, 1)
-  tests_for_sbc(sbc, 1, 2)
+  tests_for_sbc(sbc, 4, 10)
   
   sbc <- new_sbc_for_testing(0, 3, 4)
-  tests_for_sbc(sbc, N = 4, L = 10)
+  tests_for_sbc(sbc, N = 4, L = 10, keep_stan_fit = FALSE)
+  
+  sbc <- new_sbc_for_testing(0, 3, 4)
+  tests_for_sbc(sbc, N = 4, L = 10, keep_stan_fit = FALSE)
 })

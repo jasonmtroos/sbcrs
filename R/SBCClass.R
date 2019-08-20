@@ -5,7 +5,6 @@
 #' 
 #' @description Generator class for creating new instances of the \code{SBC} R6 class.
 #'
-#'
 #' @format An R6 object of type \code{SBC}
 #' 
 #' 
@@ -16,9 +15,16 @@
 #'         \item{\code{data = function(seed) {...}}}{A function with signature \code{function(seed)} that returns a named list.}
 #'         \item{\code{params = function(seed, data) {...}}}{A function with signature \code{function(seed, data)} that returns a named list.}
 #'         \item{\code{modeled_variable = function(seed, data, params) {...}}}{A function with signature \code{function(seed, data, params)} that returns a named list.}
-#'         \item{\code{sampling = function(seed, data, params, modeled_variable) {...}}}{A function with signature \code{function(seed, data, params, modeled_variable)} that returns a \code{stanfit} object.}
+#'         \item{\code{sampling = function(seed, data, params, modeled_variable, iters) {...}}}{A function with signature \code{function(seed, data, params, modeled_variable, iters)} that returns a \code{stanfit} object run for \code{iters} sampling iterations.}
 #'     }}
-#' \item{\code{$calibrate(N, L)}}{Run calibration procedure using \code{N} simulations of (thinned) sample size \code{L}.}
+#' \item{\code{$calibrate(N, L, keep_stan_fit = TRUE)}}{
+#'     Run the calibration procedure.
+#'     \describe{
+#'         \item{\code{N}}{The number of times to simulate parameters and recover via MCMC.}
+#'         \item{\code{L}}{The number of MCMC samples to retain when calculating rank statistics.}
+#'         \item{\code{keep_stan_fit = TRUE}}{If \code{TRUE} (the default), then the \code{stan_fit} objects returned by the \code{sampling} function are retained.}
+#'     }
+#' }
 #' \item{\code{$summary(var = NULL)}}{Summarize results of a previous calibration. Optionally specify a parameter \code{var}.}
 #' \item{\code{$plot(var = NULL)}}{Plot a histogram of ranks from a previous calibration. Optionally specify a parameter \code{var}.}
 #' }
@@ -26,7 +32,18 @@
 #' 
 #' @section Fields:
 #' \describe{
-#' \item{\code{$calibrations}}{A list of \code{N} calibrations created by calling \code{$calibrate}}
+#' \item{\code{$calibrations}}{A list of \code{N} calibrations created by calling \code{$calibrate}. Each item is list with the following named elements:
+#'     \describe{
+#'        \item{data}{Output from call to the \code{data} function.}
+#'        \item{params}{Output from call to the \code{params} function.}
+#'        \item{modeled_variable}{Output from call to the \code{modeled_variable} function.}
+#'        \item{samples}{A stanfit object returned from call to the \code{sampling} function if \code{keep_stan_fit = TRUE}, otherwise NULL.}
+#'        \item{ranks}{A named list matching items in \code{params}. Values express the number of samples out of a maximum \code{L} with \code{sampled$var < param$var}, where \code{sampled$var} indicates a vector of \code{L} samples of parameter \code{var}.}
+#'        \item{n_eff}{The smallest effective sample size for any parameter in any of the \code{stan_fit} objects.}
+#'        \item{iters}{The number of MCMC iterations (before thinning) in the \code{stan_fit} object.}
+#'        \item{seed}{The value of \code{seed} passed to the data, parameter, and sampling functions.}
+#'     }
+#' }
 #' } 
 #' 
 #' 
@@ -53,7 +70,7 @@ SBC <- R6::R6Class(
     .N = NULL,
     .L = NULL,
     .new_calibration = 
-      function(seed, L) {
+      function(seed, L, keep_stan_fit) {
         data <- private$.data_fun(seed)
         params <- private$.params_fun(seed, data)
         modeled_variable <- private$.modeled_variable_fun(seed, data, params)
@@ -79,7 +96,7 @@ SBC <- R6::R6Class(
         thin <- round(seq.int(1, n_samples, length.out = L))
         
         
-        q_for_p <- function(par, par_name) {
+        ranks_for_param <- function(par, par_name) {
           s <- rstan::extract(samples, par_name)
           if (length(s) == 0L)
             return(NULL)
@@ -98,33 +115,32 @@ SBC <- R6::R6Class(
           } else {
             # matrix++ parameter
             q <- plyr::aaply(s[thin,,], .margins = 1, .fun = function(x) as.vector(x < par))
-            if (is.null(dim(q))) {
-              q <- array(q, dim = dim(s)[-1])
-            }
+            dim_q <- c(length(thin), dim_p)
+            dim(q) <- dim_q
             q <- unname(colSums(q))
           }
         }
-        quantiles <- purrr::imap(params, ~q_for_p(.x, .y))
+        ranks <- purrr::imap(params, ~ranks_for_param(.x, .y))
         
+        if (!keep_stan_fit) {
+          samples <- NULL
+        }
         list(data = data, 
              params = params, 
              modeled_variable = modeled_variable,
              samples = samples,
-             quantiles = quantiles,
+             ranks = ranks,
              n_eff = n_eff,
              iters = iters,
              seed = seed)
       },
-    .clean_quantiles = function() {
-      quantiles <- purrr::map(self$calibrations, 'quantiles')
-      purrr::imap(purrr::transpose(quantiles), 
-                  ~ matrix(purrr::simplify(.x), 
-                           nrow = length(quantiles), 
-                           byrow = TRUE))
-    },
     .summary_data = function(var = NULL) {
-      L <- private$.L
-      q <- private$.clean_quantiles()
+      q <- purrr::map(self$calibrations, 'ranks')
+      q <- purrr::imap(purrr::transpose(q), 
+                  ~ matrix(purrr::simplify(.x), 
+                           nrow = length(q), 
+                           byrow = TRUE))
+    
       if (is.null(var)) {
         qd <- tibble::tibble(r = as.vector(unlist(q)))
         N <- nrow(qd)
@@ -149,14 +165,14 @@ SBC <- R6::R6Class(
         invisible(self)
       },
     calibrations = list(),
-    calibrate = function(N, L) {
+    calibrate = function(N, L, keep_stan_fit = TRUE) {
       stopifnot(N > 0L && L > 1L)
       if (foreach::getDoParWorkers() == 1) {
-        self$calibrations <- purrr::map(seq_len(N), ~private$.new_calibration(seed = .x, L = L))
+        self$calibrations <- purrr::map(seq_len(N), ~private$.new_calibration(seed = .x, L = L, keep_stan_fit = keep_stan_fit))
       } else {
         `%dopar%` <- foreach::`%dopar%`
         self$calibrations <- foreach::foreach(seed = seq_len(N)) %dopar% 
-          private$.new_calibration(seed = seed, L = L)
+          private$.new_calibration(seed = seed, L = L, keep_stan_fit = keep_stan_fit)
       }
       
       smallest_n_eff <- min(purrr::map_dbl(self$calibrations, 'n_eff'))
@@ -256,7 +272,8 @@ SBC <- R6::R6Class(
   class = TRUE,
   portable = TRUE,
   lock_class = FALSE,
-  cloneable = TRUE)
+  cloneable = TRUE
+  )
 
 
 
