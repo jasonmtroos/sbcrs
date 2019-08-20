@@ -54,9 +54,15 @@
 #' 
 #' @examples 
 #' \dontrun{
-#' sbc <- SBC$new(data = function(seed) {list(n = 10)}, 
-#'                params = function(seed, data) {list(mu = rnorm(1))}, 
-#'                modeled_variable = function(seed, data, params) {list(y = rnorm(data$n, mu, 1)}, 
+#' sbc <- SBC$new(data = function(seed) {
+#'                    list(n = 10)
+#'                }, 
+#'                params = function(seed, data) {
+#'                    list(mu = rnorm(1))
+#'                }, 
+#'                modeled_variable = function(seed, data, params) {
+#'                    list(y = rnorm(data$n, mu, 1)
+#'                }, 
 #'                sampling = function(seed, data, params, modeled_variable {
 #'                    stan_object <- NULL # usually a call to rstan::sampling() 
 #'                    stan_object

@@ -2,14 +2,14 @@ test_that("rstan fit", {
   require(rstan)
   rstan::rstan_options("auto_write" = TRUE)
   m <- NULL
-  stan_file_loc <- here::here('inst', 'stan', 'normal_group_means.stan')
+  stan_file_loc <- here::here("inst", "stan", "normal_group_means.stan")
   if (file.exists(stan_file_loc)) {
     m <- rstan::stan_model(file = stan_file_loc, save_dso = TRUE)
   }
   if (is.null(m)) {
-    m <- rstan::stan_model(file = system.file('stan', 'normal_group_means.stan', package = 'sbcrs'))
+    m <- rstan::stan_model(file = system.file("stan", "normal_group_means.stan", package = "sbcrs"))
   }
-  
+
   new_sbc_for_testing <- function(.n_obs, .n_groups, .n_types) {
     stopifnot(.n_groups > 0L && .n_types > 0L)
     SBC$new(
@@ -26,41 +26,47 @@ test_that("rstan fit", {
       params = function(seed, data) {
         set.seed(seed + 20)
         sigma <- rexp(data$n_types)
-        mu <- matrix(rnorm(data$n_groups * data$n_types, 0, 1), 
-                     nrow = data$n_groups)
-        nu  <- rnorm(1)
+        mu <- matrix(rnorm(data$n_groups * data$n_types, 0, 1),
+          nrow = data$n_groups
+        )
+        nu <- rnorm(1)
         params <- list(sigma = sigma, mu = mu, nu = nu)
         params
       },
       modeled_variable = function(seed, data, params) {
         set.seed(seed + 30)
-        y_mean <- purrr::map2_dbl(data$group, data$type, ~params$mu[.x, .y])
+        y_mean <- purrr::map2_dbl(data$group, data$type, ~ params$mu[.x, .y])
         y_sd <- params$sigma[data$type]
         modeled_variable <- list(y = rnorm(data$n_obs, y_mean, y_sd))
         modeled_variable
       },
       sampling = function(seed, data, params, modeled_variable, iters) {
-        samples <- rstan::sampling(m, data = c(data, modeled_variable), seed = seed,
-                                    chains = 1, iter = 2 * iters, warmup = iters)
+        samples <- rstan::sampling(m,
+          data = c(data, modeled_variable), seed = seed,
+          chains = 1, iter = 2 * iters, warmup = iters
+        )
         samples
-      })
+      }
+    )
   }
-  
+
   check_param_len <- function(calib) {
     param_names <- names(calib$ranks)
-    purrr::walk(param_names, ~testthat::expect_equal(length(calib$ranks[[.x]]), 
-                                                     length(calib$params[[.x]])))
+    purrr::walk(param_names, ~ testthat::expect_equal(
+      length(calib$ranks[[.x]]),
+      length(calib$params[[.x]])
+    ))
   }
   tests_for_sbc <- function(sbc, N, L, keep_stan_fit = TRUE) {
     testthat::expect_length(sbc$calibrations, 0)
     sbc$calibrate(N, L, keep_stan_fit)
     testthat::expect_length(sbc$calibrations, N)
-    purrr::walk(sbc$calibrations, ~check_param_len(.x))
-    testthat::expect_s3_class(sbc$summary(), 'data.frame')
+    purrr::walk(sbc$calibrations, ~ check_param_len(.x))
+    testthat::expect_s3_class(sbc$summary(), "data.frame")
     gg <- sbc$plot()
-    testthat::expect_s3_class(gg, 'ggplot')
+    testthat::expect_s3_class(gg, "ggplot")
     if (keep_stan_fit) {
-      testthat::expect_s4_class(sbc$calibrations[[1]]$samples, 'stanfit')
+      testthat::expect_s4_class(sbc$calibrations[[1]]$samples, "stanfit")
     } else {
       testthat::expect_null(sbc$calibrations[[1]]$samples)
     }
@@ -68,10 +74,10 @@ test_that("rstan fit", {
   }
   sbc <- new_sbc_for_testing(0, 1, 1)
   tests_for_sbc(sbc, 4, 10)
-  
+
   sbc <- new_sbc_for_testing(0, 3, 4)
   tests_for_sbc(sbc, N = 4, L = 10, keep_stan_fit = FALSE)
-  
+
   sbc <- new_sbc_for_testing(0, 3, 4)
   tests_for_sbc(sbc, N = 4, L = 10, keep_stan_fit = FALSE)
 })
