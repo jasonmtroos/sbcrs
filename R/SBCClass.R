@@ -14,10 +14,10 @@
 #' \describe{
 #' \item{\code{$new(data, params, modeled_variable, sampling)}}{Create a new SBC object, passing in functions to generate data and parameters, and draw samples. 
 #'     \describe{
-#'         \item{\code{data = function(seed) {...}}}{A function with signature \code{function(seed)} that returns a named list.}
-#'         \item{\code{params = function(seed, data) {...}}}{A function with signature \code{function(seed, data)} that returns a named list.}
-#'         \item{\code{modeled_variable = function(seed, data, params) {...}}}{A function with signature \code{function(seed, data, params)} that returns a named list.}
-#'         \item{\code{sampling = function(seed, data, params, modeled_variable, iters) {...}}}{A function with signature \code{function(seed, data, params, modeled_variable, iters)} that returns a \code{stanfit} object run for \code{iters} sampling iterations.}
+#'         \item{\code{data = function(seed) {}}}{A function with signature \code{function(seed)} that returns a named list.}
+#'         \item{\code{params = function(seed, data) {}}}{A function with signature \code{function(seed, data)} that returns a named list.}
+#'         \item{\code{modeled_variable = function(seed, data, params) {}}}{A function with signature \code{function(seed, data, params)} that returns a named list.}
+#'         \item{\code{sampling = function(seed, data, params, modeled_variable, iters) {}}}{A function with signature \code{function(seed, data, params, modeled_variable, iters)} that returns a \code{stanfit} object run for \code{iters} sampling iterations.}
 #'     }}
 #' \item{\code{$calibrate(N, L, keep_stan_fit = TRUE)}}{
 #'     Run the calibration procedure.
