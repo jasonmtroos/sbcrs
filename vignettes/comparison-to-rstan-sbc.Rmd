@@ -56,13 +56,14 @@ sbc_rstan_model <- stan_model(file = system.file('stan', 'rstan_sbc_example.stan
 
 Calibrate using `rstan::sbc()`.
 
-```{r}
-# options(mc.cores = parallel::detectCores())
-options(mc.cores = 2)
+```{r eval = FALSE}
+options(mc.cores = (if (interactive()) parallel::detectCores() else 2))
 calibration_data <- list(N = 10, a = 2, b = 2)
 rstan_sbc <- rstan::sbc(sbc_rstan_model, data = calibration_data, 256)
 plot(rstan_sbc, binwidth = 1, thin = 50)
 ```
+
+![plot of plot(rstan_sbc, binwidth = 1, thin = 50)](comparison-to-rstan-sbc-rstan_sbc.png)
 
 The Stan code used in the above example has been modified from the original. In the modified version, `y` is generated  in the `transformed data` block of the Stan file. The original model would have looked like this:
 
@@ -97,17 +98,17 @@ sbc <- SBC$new(
   })
 ```
 
-```{r}
-# doParallel::registerDoParallel(parallel::detectCores())
-doParallel::registerDoParallel(cores = 2)
+```{r eval = FALSE}
+doParallel::registerDoParallel(cores = (if (interactive()) parallel::detectCores() else 2))
 sbc$calibrate(256, 50)
 sbc$plot()
 ```
 
+![plot of sbc$plot()](comparison-to-rstan-sbc-sbc.png)
 
 Assess whether the distributions of recovered ranks are similar
 
-```{r}
+```{r eval = FALSE}
 library(purrr)
 x <- 
   map(sbc$calibrations, 'ranks') %>%
@@ -123,7 +124,19 @@ y <-
 
 qqplot(x, y, xlab = 'SBC', ylab = 'rstan')
 abline(a = 0, b = 1, col = 'red')
-wilcox.test(x, y)
 ```
 
+![qqplot](comparison-to-rstan-sbc-qq.png)
+
+```{r eval = FALSE}
+wilcox.test(x, y)
+```
+```r
+#> 
+#> 	Wilcoxon rank sum test with continuity correction
+#> 
+#> data:  x and y
+#> W = 30819, p-value = 0.2443
+#> alternative hypothesis: true location shift is not equal to 0
+```
 

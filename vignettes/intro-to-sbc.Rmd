@@ -138,8 +138,7 @@ my_sbc <- SBC$new(data = gen_data,
 To run the calibration routine, call the `$calibrate()` method on `my_sbc`. It will update the fields in this object with the output of the calibration routine.
 
 ```{r include = FALSE}
-doParallel::registerDoParallel(cores = 2)
-# doParallel::registerDoParallel(cores = parallel::detectCores())
+doParallel::registerDoParallel(cores = (if (interactive()) parallel::detectCores() else 2))
 my_sbc$calibrate(N = 32, L = 20, keep_stan_fit = FALSE)
 ```
 
@@ -209,7 +208,7 @@ new_sbc_object <- function(n_obs, n_groups, n_types) {
 
 ```{r}
 sbc <- new_sbc_object(n_obs = 0, n_groups = 1, n_types = 1)
-sbc$calibrate(N = 128, L = 50)
+sbc$calibrate(N = 32, L = 20, keep_stan_fit = FALSE)
 sbc$plot()
 sbc$summary()
 ```
@@ -218,7 +217,7 @@ sbc$summary()
 
 ```{r}
 sbc <- new_sbc_object(n_obs = 100, n_groups = 1, n_types = 1)
-sbc$calibrate(N = 32, L = 10)
+sbc$calibrate(N = 32, L = 20, keep_stan_fit = FALSE)
 sbc$plot()
 sbc$summary()
 ```
@@ -227,7 +226,7 @@ sbc$summary()
 
 ```{r}
 sbc <- new_sbc_object(n_obs = 200, n_groups = 2, n_types = 8)
-sbc$calibrate(N = 32, L = 50)
+sbc$calibrate(N = 32, L = 20, keep_stan_fit = FALSE)
 sbc$plot()
 sbc$summary()
 ```

@@ -79,18 +79,39 @@ sbc1 <- SBC$new(
 
 Perform the calibration (this may take a long time, so take advantage of parallelization).
 
-```{r}
-doParallel::registerDoParallel(cores = 2)
-sbc1$calibrate(N = 8, L = 5)
-# doParallel::registerDoParallel(cores = parallel::detectCores())
-# sbc1$calibrate(N = 256, L = 50) # warning: better, but may be time consuming!
+```{r eval = FALSE}
+doParallel::registerDoParallel(cores = (if (interactive()) parallel::detectCores() else 2))
+sbc1$calibrate(N = 256, L = 50)
 sbc1$plot()
+```
+
+![plot of sbc1$plot()](funnel-sbc1.png)
+
+
+```{r eval = FALSE}
 sbc1$plot('y')
 ```
-```{r fig.width=6, fig.height=6}
+
+![plot of sbc1$plot('y')](funnel-sbc1-y.png)
+
+```{r fig.width=6, fig.height=6, eval = FALSE}
 sbc1$plot('x')
+```
+
+![plot of sbc1$plot('x')](funnel-sbc1-x.png)
+
+```{r eval = FALSE}
 sbc1$summary()
 ```
+
+```r
+#> 
+#> 
+#>    iq expected.outside actual.outside
+#>  0.50             0.50      0.7647059
+#>  0.98             0.02      0.4117647
+```
+
 
 The model is evidently poorly conditioned.
 
@@ -123,17 +144,35 @@ sbc2a <- SBC$new(
 
 Perform the calibration.
 
-```{r}
-doParallel::registerDoParallel(cores = 2)
-sbc2a$calibrate(N = 32, L = 20)
-# doParallel::registerDoParallel(cores = parallel::detectCores())
-# sbc2a$calibrate(N = 256, L = 50)
+```{r eval = FALSE}
+sbc2a$calibrate(N = 256, L = 50)
 sbc2a$plot()
+```
+
+![plot of sbc2a$plot()](funnel-sbc2a.png)
+
+```{r eval = FALSE}
 sbc2a$plot('y_raw')
 ```
-```{r fig.width=6, fig.height=6}
+
+![plot of sbc2a$plot('y_raw')](funnel-sbc2a-y_raw.png)
+
+```{r fig.width=6, fig.height=6, eval = FALSE}
 sbc2a$plot('x_raw')
+```
+
+![plot of sbc2a$plot('x_raw')](funnel-sbc2a-x_raw.png)
+
+```{r eval = FALSE}
 sbc2a$summary()
+```
+
+```r
+#>
+#> 
+#>    iq expected.outside actual.outside
+#>  0.50             0.50      0.4313725
+#>  0.98             0.02      0.0000000
 ```
 
 Rather than comparing simulated and sampled values of `x_raw` and `y_raw`, we might instead wish to compare `x` and `y`. In the code that creates the object `sbc2b`, note that the `params()` function returns a list with named values `x` and `y`. Hence the calibration is performed on those parameters.
@@ -155,17 +194,34 @@ sbc2b <- SBC$new(
 
 Perform the calibration.
 
-```{r}
-doParallel::registerDoParallel(cores = 2)
-sbc2b$calibrate(N = 32, L = 20)
-# doParallel::registerDoParallel(cores = parallel::detectCores())
-# sbc2b$calibrate(N = 256, L = 50)
+```{r eval = FALSE}
+sbc2b$calibrate(N = 256, L = 50)
 sbc2b$plot()
+```
+
+![plot of sbc2b$plot()](funnel-sbc2b.png)
+
+```{r eval = FALSE}
 sbc2b$plot('y')
 ```
-```{r fig.width=6, fig.height=6}
+
+![plot of sbc2b$plot('y')](funnel-sbc2b-y.png)
+
+```{r fig.width=6, fig.height=6, eval = FALSE}
 sbc2b$plot('x')
+```
+
+![plot of sbc2b$plot('x')](funnel-sbc2b-x.png)
+
+```{r eval = FALSE}
 sbc2b$summary()
 ```
 
+```r
+#>
+#> 
+#>    iq expected.outside actual.outside
+#>  0.50             0.50      0.3921569
+#>  0.98             0.02      0.0000000
+```
 
