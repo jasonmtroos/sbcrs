@@ -11,6 +11,10 @@ SBC
 \description{
 Generator class for creating new instances of the \code{SBC} R6 class.
 }
+\details{
+See \href{../doc/intro-to-sbc.html}{\code{vignette('intro-to-sbc', package = 'sbcrs')}} for
+an accessible introduction to simulation-based calibration.
+}
 \section{Methods}{
 
 \describe{

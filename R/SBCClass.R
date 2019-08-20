@@ -7,6 +7,8 @@
 #'
 #' @format An R6 object of type \code{SBC}
 #' 
+#' @details See \href{../doc/intro-to-sbc.html}{\code{vignette('intro-to-sbc', package = 'sbcrs')}} for
+#' an accessible introduction to simulation-based calibration.
 #' 
 #' @section Methods:
 #' \describe{
