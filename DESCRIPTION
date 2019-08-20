@@ -1,7 +1,7 @@
 Package: sbcrs
 Title: R package for implementing (S)imulation (B)ased
     (C)alibration using (R)ank (S)tatistics
-Version: 0.0.1.0000
+Version: 0.0.0.9000
 Authors@R: 
     person(given = "Jason",
            family = "Roos",
