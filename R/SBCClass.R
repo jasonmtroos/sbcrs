@@ -63,7 +63,7 @@
 #'                modeled_variable = function(seed, data, params) {
 #'                    list(y = rnorm(data$n, mu, 1))
 #'                }, 
-#'                sampling = function(seed, data, params, modeled_variable {
+#'                sampling = function(seed, data, params, modeled_variable) {
 #'                    stan_object <- NULL # usually a call to rstan::sampling() 
 #'                    stan_object
 #'                })}
