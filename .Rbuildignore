@@ -7,3 +7,4 @@
 ^inst.*stan.*rstan_sbc_example\.rds$
 ^inst.*stan.*rstan_sbc_example_original\.rds$
 ^cran-comments\.md$
+^README\.Rmd$

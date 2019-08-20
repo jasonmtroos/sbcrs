@@ -18,12 +18,12 @@ an accessible introduction to simulation-based calibration.
 \section{Methods}{
 
 \describe{
-\item{\code{$new(data, params, modeled_variable, sampling)}}{Create a new SBC object, passing in functions to generate data and parameters, and draw samples. 
+\item{\code{$new(data, params, modeled_variable, sampling)}}{Create a new SBC object, passing in functions to generate data and parameters, and draw samples.
     \describe{
-        \item{\code{data = function(seed) {...}}}{A function with signature \code{function(seed)} that returns a named list.}
-        \item{\code{params = function(seed, data) {...}}}{A function with signature \code{function(seed, data)} that returns a named list.}
-        \item{\code{modeled_variable = function(seed, data, params) {...}}}{A function with signature \code{function(seed, data, params)} that returns a named list.}
-        \item{\code{sampling = function(seed, data, params, modeled_variable, iters) {...}}}{A function with signature \code{function(seed, data, params, modeled_variable, iters)} that returns a \code{stanfit} object run for \code{iters} sampling iterations.}
+        \item{\code{data = function(seed) {}}}{A function with signature \code{function(seed)} that returns a named list.}
+        \item{\code{params = function(seed, data) {}}}{A function with signature \code{function(seed, data)} that returns a named list.}
+        \item{\code{modeled_variable = function(seed, data, params) {}}}{A function with signature \code{function(seed, data, params)} that returns a named list.}
+        \item{\code{sampling = function(seed, data, params, modeled_variable, iters) {}}}{A function with signature \code{function(seed, data, params, modeled_variable, iters)} that returns a \code{stanfit} object run for \code{iters} sampling iterations.}
     }}
 \item{\code{$calibrate(N, L, keep_stan_fit = TRUE)}}{
     Run the calibration procedure.
@@ -58,18 +58,21 @@ an accessible introduction to simulation-based calibration.
 
 \examples{
 \dontrun{
-sbc <- SBC$new(data = function(seed) {
-                   list(n = 10)
-               }, 
-               params = function(seed, data) {
-                   list(mu = rnorm(1))
-               }, 
-               modeled_variable = function(seed, data, params) {
-                   list(y = rnorm(data$n, mu, 1)
-               }, 
-               sampling = function(seed, data, params, modeled_variable {
-                   stan_object <- NULL # usually a call to rstan::sampling() 
-                   stan_object
-               })}
+sbc <- SBC$new(
+  data = function(seed) {
+    list(n = 10)
+  },
+  params = function(seed, data) {
+    list(mu = rnorm(1))
+  },
+  modeled_variable = function(seed, data, params) {
+    list(y = rnorm(data$n, mu, 1))
+  },
+  sampling = function(seed, data, params, modeled_variable) {
+    stan_object <- NULL # usually a call to rstan::sampling()
+    stan_object
+  }
+)
+}
 }
 \keyword{datasets}
