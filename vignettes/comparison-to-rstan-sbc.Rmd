@@ -57,7 +57,8 @@ sbc_rstan_model <- stan_model(file = system.file('stan', 'rstan_sbc_example.stan
 Calibrate using `rstan::sbc()`.
 
 ```{r}
-options(mc.cores = parallel::detectCores())
+# options(mc.cores = parallel::detectCores())
+options(mc.cores = 2)
 calibration_data <- list(N = 10, a = 2, b = 2)
 rstan_sbc <- rstan::sbc(sbc_rstan_model, data = calibration_data, 256)
 plot(rstan_sbc, binwidth = 1, thin = 50)
@@ -83,11 +84,11 @@ sbc <- SBC$new(
     calibration_data
   },
   params = function(seed, data) {
-    set.seed(seed + 10)
+    set.seed(seed + 1e6)
     list(pi = rbeta(1, data$a, data$b))
   },
   modeled_variable = function(seed, data, params) {
-    set.seed(seed + 20)
+    set.seed(seed + 2e6)
     list(y = rbinom(1, data$N, params$pi))
   },
   sampling = function(seed, data, params, modeled_variable, iters) {
@@ -97,9 +98,10 @@ sbc <- SBC$new(
 ```
 
 ```{r}
-doParallel::registerDoParallel(parallel::detectCores())
-sbc$calibrate(256, 20)
-sbc$plot('pi')
+# doParallel::registerDoParallel(parallel::detectCores())
+doParallel::registerDoParallel(cores = 2)
+sbc$calibrate(256, 50)
+sbc$plot()
 ```
 
 
@@ -108,18 +110,19 @@ Assess whether the distributions of recovered ranks are similar
 ```{r}
 library(purrr)
 x <- 
-  map(sbc$calibrations, 'quantiles') %>%
+  map(sbc$calibrations, 'ranks') %>%
   flatten() %>%
   unlist() %>%
   unname()
 
 y <- 
   rstan_sbc$ranks %>%
-  map(~.x[seq(1, 1000, by = 50), ]) %>%
+  map(~.x[seq(1, 1000, by = 20), ]) %>%
   map(~sum(.x)) %>%
   unlist()
 
 qqplot(x, y, xlab = 'SBC', ylab = 'rstan')
+abline(a = 0, b = 1, col = 'red')
 wilcox.test(x, y)
 ```
 

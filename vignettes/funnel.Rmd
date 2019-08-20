@@ -80,8 +80,10 @@ sbc1 <- SBC$new(
 Perform the calibration (this may take a long time, so take advantage of parallelization).
 
 ```{r}
-doParallel::registerDoParallel(cores = parallel::detectCores())
-sbc1$calibrate(N = 256, L = 50)
+doParallel::registerDoParallel(cores = 2)
+sbc1$calibrate(N = 8, L = 5)
+# doParallel::registerDoParallel(cores = parallel::detectCores())
+# sbc1$calibrate(N = 256, L = 50) # warning: better, but may be time consuming!
 sbc1$plot()
 sbc1$plot('y')
 ```
@@ -122,8 +124,10 @@ sbc2a <- SBC$new(
 Perform the calibration.
 
 ```{r}
-doParallel::registerDoParallel(cores = parallel::detectCores())
-sbc2a$calibrate(N = 256, L = 50)
+doParallel::registerDoParallel(cores = 2)
+sbc2a$calibrate(N = 32, L = 20)
+# doParallel::registerDoParallel(cores = parallel::detectCores())
+# sbc2a$calibrate(N = 256, L = 50)
 sbc2a$plot()
 sbc2a$plot('y_raw')
 ```
@@ -152,8 +156,10 @@ sbc2b <- SBC$new(
 Perform the calibration.
 
 ```{r}
-doParallel::registerDoParallel(cores = parallel::detectCores())
-sbc2b$calibrate(N = 256, L = 50)
+doParallel::registerDoParallel(cores = 2)
+sbc2b$calibrate(N = 32, L = 20)
+# doParallel::registerDoParallel(cores = parallel::detectCores())
+# sbc2b$calibrate(N = 256, L = 50)
 sbc2b$plot()
 sbc2b$plot('y')
 ```
