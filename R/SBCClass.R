@@ -93,7 +93,8 @@ SBC <- R6::R6Class(
           iters <- round(iters * L / n_eff)
 
           samples <- private$.sampling_fun(seed, data, params, modeled_variable, iters)
-          n_eff <- round(min((as.data.frame(rstan::summary(samples)$summary))$n_eff, na.rm = TRUE))
+          # n_eff <- round(min((as.data.frame(rstan::summary(samples)$summary))$n_eff, na.rm = TRUE))
+          n_eff <- min(round(rstan::summary(samples)$summary[, "n_eff"], 0), na.rm = TRUE) # from rstan:::print.stan_fit
 
           if (length(samples@sim) == 0) {
             stop(paste0("Sampling problem"))
@@ -103,7 +104,8 @@ SBC <- R6::R6Class(
           }
         }
 
-        n_samples <- samples@stan_args[[1]]$iter - samples@stan_args[[1]]$warmup
+        # n_samples <- samples@stan_args[[1]]$iter - samples@stan_args[[1]]$warmup
+        n_samples <- samples@sim$n_save - samples@sim$warmup2 # from rstan:::print.stan_fit
         thin <- round(seq.int(1, n_samples, length.out = L))
 
 
