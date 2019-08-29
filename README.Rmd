@@ -17,6 +17,7 @@ knitr::opts_chunk$set(
 # sbcrs
 
 <!-- badges: start -->
+[![Travis build status](https://travis-ci.org/jasonmtroos/sbcrs.svg?branch=master)](https://travis-ci.org/jasonmtroos/sbcrs)
 <!-- badges: end -->
 
 This package provides tools to simplify the implementation of

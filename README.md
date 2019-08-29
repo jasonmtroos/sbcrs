@@ -5,6 +5,8 @@
 
 <!-- badges: start -->
 
+[![Travis build
+status](https://travis-ci.org/jasonmtroos/sbcrs.svg?branch=master)](https://travis-ci.org/jasonmtroos/sbcrs)
 <!-- badges: end -->
 
 This package provides tools to simplify the implementation of simulation
@@ -141,8 +143,8 @@ my_sbc$summary()
 #> 
 #> 
 #>         iq expected.outside actual.outside
-#>  0.5000000       0.50000000     0.32258065
-#>  0.9666667       0.03333333     0.06451613
+#>  0.5000000       0.50000000      0.4193548
+#>  0.9666667       0.03333333      0.0000000
 ```
 
 Looks good\!
