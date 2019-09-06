@@ -1,6 +1,6 @@
 Package: sbcrs
-Title: R package for implementing simulation based
-    calibration using rank statistics
+Title: R package for implementing simulation based calibration
+    using rank statistics
 Version: 0.0.0.9000
 Date: 2019-09-06
 Authors@R: 
@@ -18,26 +18,26 @@ Imports:
     doParallel (>= 1.0.15),
     dplyr (>= 0.8.3),
     foreach (>= 1.4.7),
+    ggplot2 (>= 3.2.0),
     magrittr (>= 1.5),
+    plyr (>= 1.8.4),
     purrr (>= 0.3.2),
     R6 (>= 2.4.0),
     Rcpp (>= 1.0.2),
     rstan (>= 2.19.2),
-    tibble (>= 2.1.3),
-    tidyr (>= 0.8.3),
-    ggplot2 (>= 3.2.0),
     stringr (>= 1.4.0),
-    plyr (>= 1.8.4)
+    tibble (>= 2.1.3),
+    tidyr (>= 0.8.3)
 Suggests: 
     here (>= 0.1),
     knitr (>= 1.23),
+    parallel (>= 3.5.0),
     readr (>= 1.3.1),
     rmarkdown (>= 1.14),
-    testthat (>= 2.1.0),
-    parallel (>= 3.5.0)
+    testthat (>= 2.1.0)
 VignetteBuilder: 
     knitr
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 6.1.1
 Roxygen: list(markdown = TRUE)
+RoxygenNote: 6.1.1
