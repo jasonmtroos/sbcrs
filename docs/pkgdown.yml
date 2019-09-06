@@ -1,0 +1,8 @@
+pandoc: 2.3.1
+pkgdown: 1.4.0
+pkgdown_sha: ~
+articles:
+  comparison-to-rstan-sbc: comparison-to-rstan-sbc.html
+  funnel: funnel.html
+  intro-to-sbc: intro-to-sbc.html
+
