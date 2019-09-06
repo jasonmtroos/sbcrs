@@ -7,7 +7,7 @@ test_that("initialization works", {
       set.seed(seed + 10)
       list(mu = rnorm(data$n, 0, 1))
     },
-    modeled_variable = function(seed, data, params) {
+    modeled_data = function(seed, data, params) {
       set.seed(seed + 20)
       list(y = rnorm(data$n, params$mu, 1))
     },

@@ -33,16 +33,16 @@ test_that("rstan fit", {
         params <- list(sigma = sigma, mu = mu, nu = nu)
         params
       },
-      modeled_variable = function(seed, data, params) {
+      modeled_data = function(seed, data, params) {
         set.seed(seed + 30)
         y_mean <- purrr::map2_dbl(data$group, data$type, ~ params$mu[.x, .y])
         y_sd <- params$sigma[data$type]
-        modeled_variable <- list(y = rnorm(data$n_obs, y_mean, y_sd))
-        modeled_variable
+        modeled_data <- list(y = rnorm(data$n_obs, y_mean, y_sd))
+        modeled_data
       },
-      sampling = function(seed, data, params, modeled_variable, iters) {
+      sampling = function(seed, data, params, modeled_data, iters) {
         samples <- rstan::sampling(m,
-          data = c(data, modeled_variable), seed = seed,
+          data = c(data, modeled_data), seed = seed,
           chains = 1, iter = 2 * iters, warmup = iters
         )
         samples

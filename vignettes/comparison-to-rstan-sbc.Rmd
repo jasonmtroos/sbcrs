@@ -88,12 +88,12 @@ sbc <- SBC$new(
     set.seed(seed + 1e6)
     list(pi = rbeta(1, data$a, data$b))
   },
-  modeled_variable = function(seed, data, params) {
+  modeled_data = function(seed, data, params) {
     set.seed(seed + 2e6)
     list(y = rbinom(1, data$N, params$pi))
   },
-  sampling = function(seed, data, params, modeled_variable, iters) {
-    sampling(sbc_original_model, data = c(data, modeled_variable), seed = seed,
+  sampling = function(seed, data, params, modeled_data, iters) {
+    sampling(sbc_original_model, data = c(data, modeled_data), seed = seed,
              chains = 1, iter = 2 * iters, warmup = iters)
   })
 ```

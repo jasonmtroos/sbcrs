@@ -18,12 +18,12 @@ an accessible introduction to simulation-based calibration.
 \section{Methods}{
 
 \describe{
-\item{\code{$new(data, params, modeled_variable, sampling)}}{Create a new SBC object, passing in functions to generate data and parameters, and draw samples.
+\item{\code{$new(data, params, modeled_data, sampling)}}{Create a new SBC object, passing in functions to generate data and parameters, and draw samples.
     \describe{
         \item{\code{data = function(seed) {}}}{A function with signature \code{function(seed)} that returns a named list.}
         \item{\code{params = function(seed, data) {}}}{A function with signature \code{function(seed, data)} that returns a named list.}
-        \item{\code{modeled_variable = function(seed, data, params) {}}}{A function with signature \code{function(seed, data, params)} that returns a named list.}
-        \item{\code{sampling = function(seed, data, params, modeled_variable, iters) {}}}{A function with signature \code{function(seed, data, params, modeled_variable, iters)} that returns a \code{stanfit} object run for \code{iters} sampling iterations.}
+        \item{\code{modeled_data = function(seed, data, params) {}}}{A function with signature \code{function(seed, data, params)} that returns a named list.}
+        \item{\code{sampling = function(seed, data, params, modeled_data, iters) {}}}{A function with signature \code{function(seed, data, params, modeled_data, iters)} that returns a \code{stanfit} object run for \code{iters} sampling iterations.}
     }}
 \item{\code{$calibrate(N, L, keep_stan_fit = TRUE)}}{
     Run the calibration procedure.
@@ -45,7 +45,7 @@ an accessible introduction to simulation-based calibration.
     \describe{
        \item{data}{Output from call to the \code{data} function.}
        \item{params}{Output from call to the \code{params} function.}
-       \item{modeled_variable}{Output from call to the \code{modeled_variable} function.}
+       \item{modeled_data}{Output from call to the \code{modeled_data} function.}
        \item{samples}{A stanfit object returned from call to the \code{sampling} function if \code{keep_stan_fit = TRUE}, otherwise NULL.}
        \item{ranks}{A named list matching items in \code{params}. Values express the number of samples out of a maximum \code{L} with \code{sampled$var < param$var}, where \code{sampled$var} indicates a vector of \code{L} samples of parameter \code{var}.}
        \item{n_eff}{The smallest effective sample size for any parameter in any of the \code{stan_fit} objects.}
@@ -65,10 +65,10 @@ sbc <- SBC$new(
   params = function(seed, data) {
     list(mu = rnorm(1))
   },
-  modeled_variable = function(seed, data, params) {
+  modeled_data = function(seed, data, params) {
     list(y = rnorm(data$n, mu, 1))
   },
-  sampling = function(seed, data, params, modeled_variable) {
+  sampling = function(seed, data, params, modeled_data) {
     stan_object <- NULL # usually a call to rstan::sampling()
     stan_object
   }

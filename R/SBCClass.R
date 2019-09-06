@@ -12,12 +12,12 @@
 #'
 #' @section Methods:
 #' \describe{
-#' \item{\code{$new(data, params, modeled_variable, sampling)}}{Create a new SBC object, passing in functions to generate data and parameters, and draw samples.
+#' \item{\code{$new(data, params, modeled_data, sampling)}}{Create a new SBC object, passing in functions to generate data and parameters, and draw samples.
 #'     \describe{
 #'         \item{\code{data = function(seed) {}}}{A function with signature \code{function(seed)} that returns a named list.}
 #'         \item{\code{params = function(seed, data) {}}}{A function with signature \code{function(seed, data)} that returns a named list.}
-#'         \item{\code{modeled_variable = function(seed, data, params) {}}}{A function with signature \code{function(seed, data, params)} that returns a named list.}
-#'         \item{\code{sampling = function(seed, data, params, modeled_variable, iters) {}}}{A function with signature \code{function(seed, data, params, modeled_variable, iters)} that returns a \code{stanfit} object run for \code{iters} sampling iterations.}
+#'         \item{\code{modeled_data = function(seed, data, params) {}}}{A function with signature \code{function(seed, data, params)} that returns a named list.}
+#'         \item{\code{sampling = function(seed, data, params, modeled_data, iters) {}}}{A function with signature \code{function(seed, data, params, modeled_data, iters)} that returns a \code{stanfit} object run for \code{iters} sampling iterations.}
 #'     }}
 #' \item{\code{$calibrate(N, L, keep_stan_fit = TRUE)}}{
 #'     Run the calibration procedure.
@@ -38,7 +38,7 @@
 #'     \describe{
 #'        \item{data}{Output from call to the \code{data} function.}
 #'        \item{params}{Output from call to the \code{params} function.}
-#'        \item{modeled_variable}{Output from call to the \code{modeled_variable} function.}
+#'        \item{modeled_data}{Output from call to the \code{modeled_data} function.}
 #'        \item{samples}{A stanfit object returned from call to the \code{sampling} function if \code{keep_stan_fit = TRUE}, otherwise NULL.}
 #'        \item{ranks}{A named list matching items in \code{params}. Values express the number of samples out of a maximum \code{L} with \code{sampled$var < param$var}, where \code{sampled$var} indicates a vector of \code{L} samples of parameter \code{var}.}
 #'        \item{n_eff}{The smallest effective sample size for any parameter in any of the \code{stan_fit} objects.}
@@ -61,10 +61,10 @@
 #'   params = function(seed, data) {
 #'     list(mu = rnorm(1))
 #'   },
-#'   modeled_variable = function(seed, data, params) {
+#'   modeled_data = function(seed, data, params) {
 #'     list(y = rnorm(data$n, mu, 1))
 #'   },
-#'   sampling = function(seed, data, params, modeled_variable) {
+#'   sampling = function(seed, data, params, modeled_data) {
 #'     stan_object <- NULL # usually a call to rstan::sampling()
 #'     stan_object
 #'   }
@@ -76,7 +76,7 @@ SBC <- R6::R6Class(
   private = list(
     .data_fun = NULL,
     .params_fun = NULL,
-    .modeled_variable_fun = NULL,
+    .modeled_data_fun = NULL,
     .sampling_fun = NULL,
     .N = NULL,
     .L = NULL,
@@ -84,7 +84,7 @@ SBC <- R6::R6Class(
       function(seed, L, keep_stan_fit) {
         data <- private$.data_fun(seed)
         params <- private$.params_fun(seed, data)
-        modeled_variable <- private$.modeled_variable_fun(seed, data, params)
+        modeled_data <- private$.modeled_data_fun(seed, data, params)
 
         iters <- 1000
         n_eff <- as.double(L) - .0001
@@ -92,7 +92,7 @@ SBC <- R6::R6Class(
         while (n_eff < L) {
           iters <- round(iters * L / n_eff)
 
-          samples <- private$.sampling_fun(seed, data, params, modeled_variable, iters)
+          samples <- private$.sampling_fun(seed, data, params, modeled_data, iters)
           # n_eff <- round(min((as.data.frame(rstan::summary(samples)$summary))$n_eff, na.rm = TRUE))
           n_eff <- min(round(rstan::summary(samples)$summary[, "n_eff"], 0), na.rm = TRUE) # from rstan:::print.stan_fit
 
@@ -143,7 +143,7 @@ SBC <- R6::R6Class(
         list(
           data = data,
           params = params,
-          modeled_variable = modeled_variable,
+          modeled_data = modeled_data,
           samples = samples,
           ranks = ranks,
           n_eff = n_eff,
@@ -177,11 +177,11 @@ SBC <- R6::R6Class(
     initialize =
       function(data = function(seed) list(),
                      params = function(seed, data) list(),
-                     modeled_variable = function(seed, data, params) list(),
+                     modeled_data = function(seed, data, params) list(),
                      sampling) {
         private$.data_fun <- data
         private$.params_fun <- params
-        private$.modeled_variable_fun <- modeled_variable
+        private$.modeled_data_fun <- modeled_data
         private$.sampling_fun <- sampling
         invisible(self)
       },

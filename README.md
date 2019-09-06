@@ -119,14 +119,14 @@ my_sbc <- SBC$new(
     sigma <- rexp(1)
     list(alpha = alpha, beta = beta, sigma = sigma)
   },
-  modeled_variable = function(seed, data, params) {
+  modeled_data = function(seed, data, params) {
     set.seed(seed + 2e6)
     list(y = rnorm(100, params$alpha + 
                      params$beta * data$x + 
                      params$beta^2 * data$w, params$sigma))
   },
-  sampling = function(seed, data, params, modeled_variable, iters) {
-    data_for_stan <- c(data, modeled_variable)
+  sampling = function(seed, data, params, modeled_data, iters) {
+    data_for_stan <- c(data, modeled_data)
     rstan::sampling(my_model, data = data_for_stan, seed = seed,
                     chains = 1, iter = 2 * iters, warmup = iters,
                     refresh = 200)
@@ -143,7 +143,7 @@ my_sbc$summary()
 #> 
 #> 
 #>         iq expected.outside actual.outside
-#>  0.5000000       0.50000000      0.4193548
+#>  0.5000000       0.50000000      0.3225806
 #>  0.9666667       0.03333333      0.0000000
 ```
 

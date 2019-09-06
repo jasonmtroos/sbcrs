@@ -72,7 +72,7 @@ sbc1 <- SBC$new(
     x <- rnorm(9, 0, exp(y/2))
     list(y = y, x = x)
   }, 
-  sampling = function(seed, data, params, modeled_variable, iters) {
+  sampling = function(seed, data, params, modeled_data, iters) {
     sampling(funnel, data = data, seed = seed, chains = 1, iter = 2 * iters, warmup = iters)
   })
 ```
@@ -137,7 +137,7 @@ sbc2a <- SBC$new(
     x_raw <- rnorm(9, 0, 1)
     list(y_raw = y_raw, x_raw = x_raw)
   }, 
-  sampling = function(seed, data, params, modeled_variable, iters) {
+  sampling = function(seed, data, params, modeled_data, iters) {
     sampling(funnel_reparameterized, data = data, seed = seed, chains = 1, iter = 2 * iters, warmup = iters)
   })
 ```
@@ -187,7 +187,7 @@ sbc2b <- SBC$new(
     x <- exp(y/2) * x_raw;
     list(x = x, y = y)
   }, 
-  sampling = function(seed, data, params, modeled_variable, iters) {
+  sampling = function(seed, data, params, modeled_data, iters) {
     sampling(funnel_reparameterized, data = data, seed = seed, chains = 1, iter = 2 * iters, warmup = iters)
   })
 ```
