@@ -1,12 +1,13 @@
 Package: sbcrs
-Title: R package for implementing (S)imulation (B)ased
-    (C)alibration using (R)ank (S)tatistics
+Title: R package for implementing simulation based
+    calibration using rank statistics
 Version: 0.0.0.9000
+Date: 2019-09-06
 Authors@R: 
     person(given = "Jason",
            family = "Roos",
            role = c("aut", "cre"),
-           email = "jroos@rsm.nl",
+           email = "my_first_initial_and_last_name@rsm.nl",
            comment = c(ORCID = "0000-0001-9764-5128"))
 Description: Provides tools to simplify the implementation of
     simulation based calibration using rank statistics.
@@ -39,3 +40,4 @@ VignetteBuilder:
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 6.1.1
+Roxygen: list(markdown = TRUE)

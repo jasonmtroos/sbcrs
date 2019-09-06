@@ -3,47 +3,47 @@
 
 #' SBC class
 #'
-#' @description Generator class for creating new instances of the \code{SBC} R6 class.
+#' @description Generator class for creating new instances of the `SBC` R6 class.
 #'
-#' @format An R6 object of type \code{SBC}
+#' @format An R6 object of type `SBC`
 #'
-#' @details See \href{../doc/intro-to-sbc.html}{\code{vignette('intro-to-sbc', package = 'sbcrs')}} for
+#' @details See [`vignette('intro-to-sbc', package = 'sbcrs')`](../doc/intro-to-sbc.html) for
 #' an accessible introduction to simulation-based calibration.
 #'
 #' @section Methods:
 #' \describe{
-#' \item{\code{$new(data, params, modeled_data, sampling)}}{Create a new SBC object, passing in functions to generate data and parameters, and draw samples.
+#' \item{`$new(data, params, modeled_data, sampling)`}{Create a new SBC object, passing in functions to generate data and parameters, and draw samples.
 #'     \describe{
-#'         \item{\code{data = function(seed) {}}}{A function with signature \code{function(seed)} that returns a named list.}
-#'         \item{\code{params = function(seed, data) {}}}{A function with signature \code{function(seed, data)} that returns a named list.}
-#'         \item{\code{modeled_data = function(seed, data, params) {}}}{A function with signature \code{function(seed, data, params)} that returns a named list.}
-#'         \item{\code{sampling = function(seed, data, params, modeled_data, iters) {}}}{A function with signature \code{function(seed, data, params, modeled_data, iters)} that returns a \code{stanfit} object run for \code{iters} sampling iterations.}
+#'         \item{\code{data = function(seed) {}}}{A function with signature `function(seed)` that returns a named list.}
+#'         \item{\code{params = function(seed, data) {}}}{A function with signature `function(seed, data)` that returns a named list.}
+#'         \item{\code{modeled_data = function(seed, data, params) {}}}{A function with signature `function(seed, data, params)` that returns a named list.}
+#'         \item{\code{sampling = function(seed, data, params, modeled_data, iters) {}}}{A function with signature `function(seed, data, params, modeled_data, iters)` that returns a `stanfit` object run for `iters` sampling iterations.}
 #'     }}
-#' \item{\code{$calibrate(N, L, keep_stan_fit = TRUE)}}{
+#' \item{`$calibrate(N, L, keep_stan_fit = TRUE)`}{
 #'     Run the calibration procedure.
 #'     \describe{
-#'         \item{\code{N}}{The number of times to simulate parameters and recover via MCMC.}
-#'         \item{\code{L}}{The number of MCMC samples to retain when calculating rank statistics.}
-#'         \item{\code{keep_stan_fit = TRUE}}{If \code{TRUE} (the default), then the \code{stan_fit} objects returned by the \code{sampling} function are retained.}
+#'         \item{`N`}{The number of times to simulate parameters and recover via MCMC.}
+#'         \item{`L`}{The number of MCMC samples to retain when calculating rank statistics.}
+#'         \item{`keep_stan_fit = TRUE`}{If `TRUE` (the default), then the `stan_fit` objects returned by the `sampling` function are retained.}
 #'     }
 #' }
-#' \item{\code{$summary(var = NULL)}}{Summarize results of a previous calibration. Optionally specify a parameter \code{var}.}
-#' \item{\code{$plot(var = NULL)}}{Plot a histogram of ranks from a previous calibration. Optionally specify a parameter \code{var}.}
+#' \item{`$summary(var = NULL)`}{Summarize results of a previous calibration. Optionally specify a parameter `var`.}
+#' \item{`$plot(var = NULL)`}{Plot a histogram of ranks from a previous calibration. Optionally specify a parameter `var`.}
 #' }
 
 #'
 #' @section Fields:
 #' \describe{
-#' \item{\code{$calibrations}}{A list of \code{N} calibrations created by calling \code{$calibrate}. Each item is list with the following named elements:
+#' \item{`$calibrations`}{A list of `N` calibrations created by calling `$calibrate`. Each item is list with the following named elements:
 #'     \describe{
-#'        \item{data}{Output from call to the \code{data} function.}
-#'        \item{params}{Output from call to the \code{params} function.}
-#'        \item{modeled_data}{Output from call to the \code{modeled_data} function.}
-#'        \item{samples}{A stanfit object returned from call to the \code{sampling} function if \code{keep_stan_fit = TRUE}, otherwise NULL.}
-#'        \item{ranks}{A named list matching items in \code{params}. Values express the number of samples out of a maximum \code{L} with \code{sampled$var < param$var}, where \code{sampled$var} indicates a vector of \code{L} samples of parameter \code{var}.}
-#'        \item{n_eff}{The smallest effective sample size for any parameter in any of the \code{stan_fit} objects.}
-#'        \item{iters}{The number of MCMC iterations (before thinning) in the \code{stan_fit} object.}
-#'        \item{seed}{The value of \code{seed} passed to the data, parameter, and sampling functions.}
+#'        \item{data}{Output from call to the `data` function.}
+#'        \item{params}{Output from call to the `params` function.}
+#'        \item{modeled_data}{Output from call to the `modeled_data` function.}
+#'        \item{samples}{A stanfit object returned from call to the `sampling` function if `keep_stan_fit = TRUE`, otherwise NULL.}
+#'        \item{ranks}{A named list matching items in `params`. Values express the number of samples out of a maximum `L` with `sampled$var < param$var`, where `sampled$var` indicates a vector of `L` samples of parameter `var`.}
+#'        \item{n_eff}{The smallest effective sample size for any parameter in any of the `stan_fit` objects.}
+#'        \item{iters}{The number of MCMC iterations (before thinning) in the `stan_fit` object.}
+#'        \item{seed}{The value of `seed` passed to the data, parameter, and sampling functions.}
 #'     }
 #' }
 #' }

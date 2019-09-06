@@ -12,26 +12,26 @@ SBC
 Generator class for creating new instances of the \code{SBC} R6 class.
 }
 \details{
-See \href{../doc/intro-to-sbc.html}{\code{vignette('intro-to-sbc', package = 'sbcrs')}} for
+See \href{../doc/intro-to-sbc.html}{vignette('intro-to-sbc', package = 'sbcrs')} for
 an accessible introduction to simulation-based calibration.
 }
 \section{Methods}{
 
 \describe{
 \item{\code{$new(data, params, modeled_data, sampling)}}{Create a new SBC object, passing in functions to generate data and parameters, and draw samples.
-    \describe{
-        \item{\code{data = function(seed) {}}}{A function with signature \code{function(seed)} that returns a named list.}
-        \item{\code{params = function(seed, data) {}}}{A function with signature \code{function(seed, data)} that returns a named list.}
-        \item{\code{modeled_data = function(seed, data, params) {}}}{A function with signature \code{function(seed, data, params)} that returns a named list.}
-        \item{\code{sampling = function(seed, data, params, modeled_data, iters) {}}}{A function with signature \code{function(seed, data, params, modeled_data, iters)} that returns a \code{stanfit} object run for \code{iters} sampling iterations.}
-    }}
+\describe{
+\item{\code{data = function(seed) {}}}{A function with signature \code{function(seed)} that returns a named list.}
+\item{\code{params = function(seed, data) {}}}{A function with signature \code{function(seed, data)} that returns a named list.}
+\item{\code{modeled_data = function(seed, data, params) {}}}{A function with signature \code{function(seed, data, params)} that returns a named list.}
+\item{\code{sampling = function(seed, data, params, modeled_data, iters) {}}}{A function with signature \code{function(seed, data, params, modeled_data, iters)} that returns a \code{stanfit} object run for \code{iters} sampling iterations.}
+}}
 \item{\code{$calibrate(N, L, keep_stan_fit = TRUE)}}{
-    Run the calibration procedure.
-    \describe{
-        \item{\code{N}}{The number of times to simulate parameters and recover via MCMC.}
-        \item{\code{L}}{The number of MCMC samples to retain when calculating rank statistics.}
-        \item{\code{keep_stan_fit = TRUE}}{If \code{TRUE} (the default), then the \code{stan_fit} objects returned by the \code{sampling} function are retained.}
-    }
+Run the calibration procedure.
+\describe{
+\item{\code{N}}{The number of times to simulate parameters and recover via MCMC.}
+\item{\code{L}}{The number of MCMC samples to retain when calculating rank statistics.}
+\item{\code{keep_stan_fit = TRUE}}{If \code{TRUE} (the default), then the \code{stan_fit} objects returned by the \code{sampling} function are retained.}
+}
 }
 \item{\code{$summary(var = NULL)}}{Summarize results of a previous calibration. Optionally specify a parameter \code{var}.}
 \item{\code{$plot(var = NULL)}}{Plot a histogram of ranks from a previous calibration. Optionally specify a parameter \code{var}.}
@@ -42,16 +42,16 @@ an accessible introduction to simulation-based calibration.
 
 \describe{
 \item{\code{$calibrations}}{A list of \code{N} calibrations created by calling \code{$calibrate}. Each item is list with the following named elements:
-    \describe{
-       \item{data}{Output from call to the \code{data} function.}
-       \item{params}{Output from call to the \code{params} function.}
-       \item{modeled_data}{Output from call to the \code{modeled_data} function.}
-       \item{samples}{A stanfit object returned from call to the \code{sampling} function if \code{keep_stan_fit = TRUE}, otherwise NULL.}
-       \item{ranks}{A named list matching items in \code{params}. Values express the number of samples out of a maximum \code{L} with \code{sampled$var < param$var}, where \code{sampled$var} indicates a vector of \code{L} samples of parameter \code{var}.}
-       \item{n_eff}{The smallest effective sample size for any parameter in any of the \code{stan_fit} objects.}
-       \item{iters}{The number of MCMC iterations (before thinning) in the \code{stan_fit} object.}
-       \item{seed}{The value of \code{seed} passed to the data, parameter, and sampling functions.}
-    }
+\describe{
+\item{data}{Output from call to the \code{data} function.}
+\item{params}{Output from call to the \code{params} function.}
+\item{modeled_data}{Output from call to the \code{modeled_data} function.}
+\item{samples}{A stanfit object returned from call to the \code{sampling} function if \code{keep_stan_fit = TRUE}, otherwise NULL.}
+\item{ranks}{A named list matching items in \code{params}. Values express the number of samples out of a maximum \code{L} with \code{sampled$var < param$var}, where \code{sampled$var} indicates a vector of \code{L} samples of parameter \code{var}.}
+\item{n_eff}{The smallest effective sample size for any parameter in any of the \code{stan_fit} objects.}
+\item{iters}{The number of MCMC iterations (before thinning) in the \code{stan_fit} object.}
+\item{seed}{The value of \code{seed} passed to the data, parameter, and sampling functions.}
+}
 }
 }
 }
