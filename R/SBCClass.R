@@ -92,9 +92,11 @@ SBC <- R6::R6Class(
         while (n_eff < L) {
           iters <- round(iters * L / n_eff)
 
-          samples <- private$.sampling_fun(seed, data, params, modeled_data, iters)
-          # n_eff <- round(min((as.data.frame(rstan::summary(samples)$summary))$n_eff, na.rm = TRUE))
-          n_eff <- min(round(rstan::summary(samples)$summary[, "n_eff"], 0), na.rm = TRUE) # from rstan:::print.stan_fit
+          samples <- private$.sampling_fun(
+            seed, data, params, modeled_data, iters)
+          # from rstan:::print.stan_fit:
+          n_eff <- min(round(rstan::summary(
+            samples)$summary[, "n_eff"], 0), na.rm = TRUE) 
 
           if (length(samples@sim) == 0) {
             stop(paste0("Sampling problem"))
@@ -104,8 +106,8 @@ SBC <- R6::R6Class(
           }
         }
 
-        # n_samples <- samples@stan_args[[1]]$iter - samples@stan_args[[1]]$warmup
-        n_samples <- samples@sim$n_save - samples@sim$warmup2 # from rstan:::print.stan_fit
+        # from rstan:::print.stan_fit:
+        n_samples <- samples@sim$n_save - samples@sim$warmup2 
         thin <- round(seq.int(1, n_samples, length.out = L))
 
 
@@ -126,10 +128,12 @@ SBC <- R6::R6Class(
             q <- sum(s[thin] < par)
           } else if (length(dim_p) == 1L) {
             # vector parameter
-            q <- colSums(matrix(s, ncol = dim_p)[thin, ] < (rep(1, L) %*% t(par)))
+            q <- colSums(matrix(s, ncol = dim_p)[thin, ] < 
+                           (rep(1, L) %*% t(par)))
           } else {
             # matrix++ parameter
-            q <- plyr::aaply(s[thin, , ], .margins = 1, .fun = function(x) as.vector(x < par))
+            q <- plyr::aaply(s[thin, , ], .margins = 1, 
+                             .fun = function(x) as.vector(x < par))
             dim_q <- c(length(thin), dim_p)
             dim(q) <- dim_q
             q <- unname(colSums(q))
@@ -189,14 +193,19 @@ SBC <- R6::R6Class(
     calibrate = function(N, L, keep_stan_fit = TRUE) {
       stopifnot(N > 0L && L > 1L)
       if (foreach::getDoParWorkers() == 1) {
-        self$calibrations <- purrr::map(seq_len(N), ~ private$.new_calibration(seed = .x, L = L, keep_stan_fit = keep_stan_fit))
+        self$calibrations <- purrr::map(
+          seq_len(N), ~ private$.new_calibration(
+            seed = .x, L = L, keep_stan_fit = keep_stan_fit))
       } else {
         `%dopar%` <- foreach::`%dopar%`
-        self$calibrations <- foreach::foreach(seed = seq_len(N)) %dopar%
-          private$.new_calibration(seed = seed, L = L, keep_stan_fit = keep_stan_fit)
+        self$calibrations <- foreach::foreach(
+          seed = seq_len(N)) %dopar%
+          private$.new_calibration(
+            seed = seed, L = L, keep_stan_fit = keep_stan_fit)
       }
 
-      smallest_n_eff <- min(purrr::map_dbl(self$calibrations, "n_eff"))
+      smallest_n_eff <- min(purrr::map_dbl(
+        self$calibrations, "n_eff"))
       if (L > smallest_n_eff) {
         warning("L is too large. Smallest n_eff = ", round(n_eff))
       }
@@ -235,10 +244,13 @@ SBC <- R6::R6Class(
       dd2 <-
         dd %>%
         tidyr::crossing(dplyr::distinct(iqs)) %>%
-        dplyr::mutate(inside = n >= lo & n <= hi, outside = n < lo | n > hi) %>%
+        dplyr::mutate(inside = n >= lo & n <= hi, 
+                      outside = n < lo | n > hi) %>%
         dplyr::group_by(var, iq) %>%
-        dplyr::summarise(inside = sum(inside), outside = sum(outside)) %>%
-        dplyr::mutate(inside = inside / (inside + outside), outside = 1 - inside) %>%
+        dplyr::summarise(inside = sum(inside), 
+                         outside = sum(outside)) %>%
+        dplyr::mutate(inside = inside / (inside + outside), 
+                      outside = 1 - inside) %>%
         tidyr::gather(key, actual, -iq, -var) %>%
         dplyr::mutate(expected = dplyr::case_when(
           key == "inside" ~ iq,
@@ -246,7 +258,8 @@ SBC <- R6::R6Class(
         )) %>%
         dplyr::arrange(key, iq, var) %>%
         dplyr::filter(key == "outside") %>%
-        dplyr::select(var, iq, expected.outside = expected, actual.outside = actual) %>%
+        dplyr::select(var, iq, expected.outside = expected, 
+                      actual.outside = actual) %>%
         dplyr::ungroup()
 
       purrr::walk(
@@ -255,7 +268,8 @@ SBC <- R6::R6Class(
           cat(paste0("
 ", x$var[1], "
 "))
-          print(format.data.frame(dplyr::select(x, -var)), row.names = FALSE)
+          print(format.data.frame(dplyr::select(x, -var)), 
+                row.names = FALSE)
         }
       )
       invisible(dd2)
@@ -282,17 +296,21 @@ SBC <- R6::R6Class(
         tidyr::crossing(r = c(0, L))
 
       plotfun <- function() {
-        ggplot2::ggplot(iqs, aes(x = r, ymin = lo, ymax = hi, alpha = factor(iq))) +
+        ggplot2::ggplot(iqs, aes(
+          x = r, ymin = lo, ymax = hi, alpha = factor(iq))) +
           ggplot2::geom_ribbon(fill = "black") +
-          ggplot2::stat_count(ggplot2::aes(ymin = NULL, ymax = NULL),
+          ggplot2::stat_count(
+            ggplot2::aes(ymin = NULL, ymax = NULL),
             data = qd, alpha = 1, size = 3,
-            fill = "white", colour = "black", geom = "point", shape = 21
+            fill = "white", colour = "black", 
+            geom = "point", shape = 21
           ) +
 
           ggplot2::scale_alpha_discrete(range = c(.2, .1)) +
           ggplot2::theme_minimal() +
           facets +
-          ggplot2::labs(alpha = "IQR", x = stringr::str_glue("Quantile rank ({L} MCMC draws)"), y = "Realizations")
+          ggplot2::labs(alpha = "IQR", x = stringr::str_glue(
+            "Quantile rank ({L} MCMC draws)"), y = "Realizations")
       }
       qpf <- purrr::quietly(plotfun)
       qpf <- qpf()$result

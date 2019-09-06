@@ -7,7 +7,8 @@ test_that("rstan fit", {
     m <- rstan::stan_model(file = stan_file_loc, save_dso = TRUE)
   }
   if (is.null(m)) {
-    m <- rstan::stan_model(file = system.file("stan", "normal_group_means.stan", package = "sbcrs"))
+    m <- rstan::stan_model(file = system.file(
+      "stan", "normal_group_means.stan", package = "sbcrs"))
   }
 
   new_sbc_for_testing <- function(.n_obs, .n_groups, .n_types) {
@@ -20,7 +21,8 @@ test_that("rstan fit", {
         n_types <- .n_types
         group <- sample.int(n_groups, size = n_obs, replace = TRUE)
         type <- sample.int(n_types, size = n_obs, replace = TRUE)
-        data <- list(n_obs = n_obs, n_groups = n_groups, n_types = n_types, group = group, type = type)
+        data <- list(n_obs = n_obs, n_groups = n_groups, 
+                     n_types = n_types, group = group, type = type)
         data
       },
       params = function(seed, data) {
@@ -63,8 +65,12 @@ test_that("rstan fit", {
     testthat::expect_length(sbc$calibrations, N)
     purrr::walk(sbc$calibrations, ~ check_param_len(.x))
     testthat::expect_s3_class(sbc$summary(), "data.frame")
+    testthat::expect_s3_class(sbc$summary("mu"), "data.frame")
     gg <- sbc$plot()
     testthat::expect_s3_class(gg, "ggplot")
+    gg <- sbc$plot("mu")
+    testthat::expect_s3_class(gg, "ggplot")
+    
     if (keep_stan_fit) {
       testthat::expect_s4_class(sbc$calibrations[[1]]$samples, "stanfit")
     } else {
@@ -80,4 +86,9 @@ test_that("rstan fit", {
 
   sbc <- new_sbc_for_testing(0, 3, 4)
   tests_for_sbc(sbc, N = 4, L = 10, keep_stan_fit = FALSE)
+  
+  doParallel::registerDoParallel(cores = 2)
+  sbc <- new_sbc_for_testing(0, 3, 4)
+  tests_for_sbc(sbc, N = 4, L = 10, keep_stan_fit = FALSE)
+  
 })

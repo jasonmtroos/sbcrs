@@ -2,7 +2,6 @@ Package: sbcrs
 Title: R package for implementing simulation based calibration
     using rank statistics
 Version: 0.0.0.9000
-Date: 2019-09-06
 Authors@R: 
     person(given = "Jason",
            family = "Roos",
@@ -11,6 +10,8 @@ Authors@R:
            comment = c(ORCID = "0000-0001-9764-5128"))
 Description: Provides tools to simplify the implementation of
     simulation based calibration using rank statistics.
+URL: https://github.com/jasonmtroos/sbcrs
+BugReports: https://github.com/jasonmtroos/sbcrs/issues
 License: GPL-3
 Depends: 
     R (>= 3.2.0)
