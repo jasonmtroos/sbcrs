@@ -12,3 +12,9 @@
 ^Meta$
 ^man.*figures.*README-github-example.*\.png$
 ^\.travis\.yml$
+^CODE_OF_CONDUCT\.md$
+^_pkgdown\.yml$
+^docs$
+^pkgdown$
+^codecov\.yml$
+^\.covrignore$

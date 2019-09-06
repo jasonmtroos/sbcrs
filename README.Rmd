@@ -118,7 +118,7 @@ my_sbc$plot()
 ```
 ![plot of my_sbc$plot()](man/figures/README-github-example-1.png) 
 
-Looks good!
+Looks good! 
 
 ## Contributing
 

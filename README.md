@@ -7,6 +7,8 @@
 
 [![Travis build
 status](https://travis-ci.org/jasonmtroos/sbcrs.svg?branch=master)](https://travis-ci.org/jasonmtroos/sbcrs)
+[![Codecov test
+coverage](https://codecov.io/gh/jasonmtroos/sbcrs/branch/master/graph/badge.svg)](https://codecov.io/gh/jasonmtroos/sbcrs?branch=master)
 <!-- badges: end -->
 
 This package provides tools to simplify the implementation of simulation

@@ -13,7 +13,7 @@ Description: Provides tools to simplify the implementation of
     simulation based calibration using rank statistics.
 License: GPL-3
 Depends: 
-    R (>= 3.5.0)
+    R (>= 3.2.0)
 Imports: 
     doParallel (>= 1.0.15),
     dplyr (>= 0.8.3),
@@ -34,10 +34,13 @@ Suggests:
     parallel (>= 3.5.0),
     readr (>= 1.3.1),
     rmarkdown (>= 1.14),
-    testthat (>= 2.1.0)
+    testthat (>= 2.1.0),
+    spelling,
+    covr
 VignetteBuilder: 
     knitr
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 6.1.1
+Language: en-US
