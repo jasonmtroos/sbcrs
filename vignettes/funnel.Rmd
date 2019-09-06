@@ -23,7 +23,7 @@ library(rstan)
 ```
 
 
-```{r include = FALSE, echo = FALSE, message = FALSE}
+```{r include = FALSE, echo = FALSE, message = FALSE, eval = FALSE}
 rstan::rstan_options("auto_write" = TRUE)
 get_compiled_stan_model <- function(filename) {
   m <- NULL
@@ -64,7 +64,7 @@ funnel <- stan_model(file = system.file('stan', 'funnel.stan', package = 'sbcrs'
 
 Create an SBC object called `sbc1` with functions to: 1) generate simulated values of `x` and `y`, and 2) call `rstan::sampling`, passing in `funnel` as the model to be sampled.
 
-```{r}
+```{r eval = FALSE}
 sbc1 <- SBC$new(
   params = function(seed, data) {
     set.seed(seed + 10)
@@ -80,7 +80,7 @@ sbc1 <- SBC$new(
 Perform the calibration (this may take a long time, so take advantage of parallelization).
 
 ```{r eval = FALSE}
-doParallel::registerDoParallel(cores = (if (interactive()) parallel::detectCores() else 2))
+doParallel::registerDoParallel(cores = parallel::detectCores())
 sbc1$calibrate(N = 256, L = 50)
 sbc1$plot()
 ```
@@ -129,7 +129,7 @@ funnel_reparameterized <- stan_model(file = system.file('stan', 'funnel_reparame
 
 Create an SBC object called `sbc2a` with functions to: 1) generate simulated values of `x_raw` and `y_raw`, and 2) call `rstan::sampling`, passing in `funnel_reparameterized` as the model to be sampled.
 
-```{r}
+```{r eval = FALSE}
 sbc2a <- SBC$new(
   params = function(seed, data) {
     set.seed(seed + 10)
@@ -177,7 +177,7 @@ sbc2a$summary()
 
 Rather than comparing simulated and sampled values of `x_raw` and `y_raw`, we might instead wish to compare `x` and `y`. In the code that creates the object `sbc2b`, note that the `params()` function returns a list with named values `x` and `y`. Hence the calibration is performed on those parameters.
 
-```{r}
+```{r eval = FALSE}
 sbc2b <- SBC$new(
   params = function(seed, data) {
     set.seed(seed + 10)
