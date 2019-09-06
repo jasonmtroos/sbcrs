@@ -20,8 +20,8 @@ the Stan model is left unmodified, and the code needed to calculate the
 rank statistics is written in R. This provides a potentially faster
 development workflow (Stan recompiles are not needed). It also allows
 SBC to be used in cases where generating parameters from their prior
-distributions, or the modeled variable from the likelihood function,
-would be too complicated if written in
+distributions, or the modeled data from the likelihood function, would
+be too complicated if written in
 Stan.
 
 ## Installation
@@ -70,13 +70,6 @@ arXiv:1804.06788](https://arxiv.org/abs/1804.06788).
 
 ``` r
 library(rstan)
-#> Loading required package: StanHeaders
-#> Loading required package: ggplot2
-#> rstan (Version 2.19.2, GitRev: 2e1f913d3ca3)
-#> For execution on a local, multicore CPU with excess RAM we recommend calling
-#> options(mc.cores = parallel::detectCores()).
-#> To avoid recompilation of unchanged Stan programs, we recommend calling
-#> rstan_options(auto_write = TRUE)
 my_model <- stan_model(model_code = "
 data {
   vector[100] y;
@@ -136,15 +129,6 @@ my_sbc$calibrate(N = 128, L = 30, keep_stan_fit = FALSE)
 my_sbc$plot()
 ```
 
-<img src="man/figures/README-github-example-1.png" width="100%" />
-
-``` r
-my_sbc$summary()
-#> 
-#> 
-#>         iq expected.outside actual.outside
-#>  0.5000000       0.50000000      0.3225806
-#>  0.9666667       0.03333333      0.0000000
-```
+![plot of my\_sbc$plot()](man/figures/README-github-example-1.png)
 
 Looks good\!
