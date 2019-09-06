@@ -132,3 +132,9 @@ my_sbc$plot()
 ![plot of my\_sbc$plot()](man/figures/README-github-example-1.png)
 
 Looks good\!
+
+## Contributing
+
+Please note that the ‘sbcrs’ project is released with a [Contributor
+Code of Conduct](CODE_OF_CONDUCT.md). By contributing to this project,
+you agree to abide by its terms.
