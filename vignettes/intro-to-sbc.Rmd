@@ -153,7 +153,7 @@ To run the calibration routine, call the `$calibrate()` method on `my_sbc`. It w
 my_sbc$calibrate(N = 32, L = 20, keep_stan_fit = FALSE)
 ```
 
-The results of the calibration routine are now stored in the `$calibrations` field. This is a list of length `N = 8`. It contains the data and parameters generated for each. If `keep_stan_fit = TRUE`, then it also stores the `stan_fit` objects. This can be memory-intensive, but also useful for debugging. 
+The results of the calibration routine are now stored in the `$calibrations` field. This is a list of length `N = 32`. It contains the data and parameters generated for each. If `keep_stan_fit = TRUE`, then it also stores the `stan_fit` objects. This can be memory-intensive, but also useful for debugging. 
 
 Each calibration in `$calibrations` also contains a named list called `$ranks`. Each parameter `var` has a corresponding named entry called `$ranks$var`, whose value is the number of samples (out of a maximum `L`) for which the sampled value of `var` was less than `params$var`. 
 
@@ -256,7 +256,7 @@ sbc$plot()
 
 
 
-```{r eval = FALSE}
+```{r}
 sbc$summary()
 ```
 

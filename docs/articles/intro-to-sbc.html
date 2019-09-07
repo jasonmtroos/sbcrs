@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">sbcrs</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.0.9001</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.0.9002</span>
       </span>
     </div>
 
@@ -217,7 +217,7 @@ model {
 <div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" data-line-number="1">doParallel<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/doParallel/man/registerDoParallel.html">registerDoParallel</a></span>(<span class="dt">cores =</span> parallel<span class="op">::</span><span class="kw"><a href="https://rdrr.io/r/parallel/detectCores.html">detectCores</a></span>())</a></code></pre></div>
 <p>To run the calibration routine, call the <code>$calibrate()</code> method on <code>my_sbc</code>. It will update the fields in this object with the output of the calibration routine.</p>
 <div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" data-line-number="1">my_sbc<span class="op">$</span><span class="kw">calibrate</span>(<span class="dt">N =</span> <span class="dv">32</span>, <span class="dt">L =</span> <span class="dv">20</span>, <span class="dt">keep_stan_fit =</span> <span class="ot">FALSE</span>)</a></code></pre></div>
-<p>The results of the calibration routine are now stored in the <code>$calibrations</code> field. This is a list of length <code>N = 8</code>. It contains the data and parameters generated for each. If <code>keep_stan_fit = TRUE</code>, then it also stores the <code>stan_fit</code> objects. This can be memory-intensive, but also useful for debugging.</p>
+<p>The results of the calibration routine are now stored in the <code>$calibrations</code> field. This is a list of length <code>N = 32</code>. It contains the data and parameters generated for each. If <code>keep_stan_fit = TRUE</code>, then it also stores the <code>stan_fit</code> objects. This can be memory-intensive, but also useful for debugging.</p>
 <p>Each calibration in <code>$calibrations</code> also contains a named list called <code>$ranks</code>. Each parameter <code>var</code> has a corresponding named entry called <code>$ranks$var</code>, whose value is the number of samples (out of a maximum <code>L</code>) for which the sampled value of <code>var</code> was less than <code>params$var</code>.</p>
 <div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" data-line-number="1">purrr<span class="op">::</span><span class="kw"><a href="https://purrr.tidyverse.org/reference/map.html">map</a></span>(my_sbc<span class="op">$</span>calibrations, <span class="st">'ranks'</span>)[<span class="dv">1</span><span class="op">:</span><span class="dv">3</span>]</a>
 <a class="sourceLine" id="cb11-2" data-line-number="2"><span class="co">#&gt; [[1]]</span></a>
@@ -337,7 +337,12 @@ model {
 <a class="sourceLine" id="cb20-2" data-line-number="2">sbc<span class="op">$</span><span class="kw">calibrate</span>(<span class="dt">N =</span> <span class="dv">32</span>, <span class="dt">L =</span> <span class="dv">20</span>, <span class="dt">keep_stan_fit =</span> <span class="ot">FALSE</span>)</a>
 <a class="sourceLine" id="cb20-3" data-line-number="3">sbc<span class="op">$</span><span class="kw"><a href="https://rdrr.io/r/graphics/plot.html">plot</a></span>()</a></code></pre></div>
 <p><img src="intro-to-sbc_files/figure-html/unnamed-chunk-22-1.png" width="700"></p>
-<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb21-1" data-line-number="1">sbc<span class="op">$</span><span class="kw"><a href="https://rdrr.io/r/base/summary.html">summary</a></span>()</a></code></pre></div>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb21-1" data-line-number="1">sbc<span class="op">$</span><span class="kw"><a href="https://rdrr.io/r/base/summary.html">summary</a></span>()</a>
+<a class="sourceLine" id="cb21-2" data-line-number="2"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb21-3" data-line-number="3"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb21-4" data-line-number="4"><span class="co">#&gt;    iq expected.outside actual.outside</span></a>
+<a class="sourceLine" id="cb21-5" data-line-number="5"><span class="co">#&gt;  0.50             0.50      0.6190476</span></a>
+<a class="sourceLine" id="cb21-6" data-line-number="6"><span class="co">#&gt;  0.95             0.05      0.0952381</span></a></code></pre></div>
 </div>
   </div>
 
