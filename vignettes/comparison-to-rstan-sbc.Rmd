@@ -23,7 +23,7 @@ library(rstan)
 ```
 
 
-```{r include = FALSE, echo = FALSE, message = FALSE, eval = FALSE}
+```{r include = FALSE, echo = FALSE, message = FALSE}
 rstan::rstan_options("auto_write" = TRUE)
 get_compiled_stan_model <- function(filename) {
   m <- NULL
@@ -54,16 +54,28 @@ Compile this Stan model:
 sbc_rstan_model <- stan_model(file = system.file('stan', 'rstan_sbc_example.stan', package = 'sbcrs'))
 ```
 
+Calibration involves generating data and parameters, and sampling from a Stan model many times. To speed up this process, take advantage of all of your machine's cores.
+
+```{r}
+doParallel::registerDoParallel(cores = parallel::detectCores())
+options(mc.cores = parallel::detectCores())
+```
+
+```{r echo = FALSE}
+if (!identical(Sys.getenv("NOT_CRAN"), "true") && !interactive()) {
+  doParallel::registerDoParallel(cores = 2)
+  options(mc.cores = 2)
+}
+```
+
 Calibrate using `rstan::sbc()`.
 
-```{r eval = FALSE}
-doParallel::registerDoParallel(cores = parallel::detectCores())
+```{r}
 calibration_data <- list(N = 10, a = 2, b = 2)
 rstan_sbc <- rstan::sbc(sbc_rstan_model, data = calibration_data, 256)
 plot(rstan_sbc, binwidth = 1, thin = 50)
 ```
 
-![plot of plot(rstan_sbc, binwidth = 1, thin = 50)](comparison-to-rstan-sbc-rstan_sbc.png)
 
 The Stan code used in the above example has been modified from the original. In the modified version, `y` is generated  in the `transformed data` block of the Stan file. The original model would have looked like this:
 
@@ -79,7 +91,7 @@ sbc_original_model <- stan_model(file = system.file('stan', 'rstan_sbc_example_o
 
 Create an SBC object that corresponds with the original model.
 
-```{r eval = FALSE}
+```{r}
 sbc <- SBC$new(
   data = function(seed) {
     calibration_data
@@ -98,17 +110,16 @@ sbc <- SBC$new(
   })
 ```
 
-```{r eval = FALSE}
-doParallel::registerDoParallel(cores = parallel::detectCores())
+```{r}
 sbc$calibrate(256, 50)
 sbc$plot()
 ```
 
-![plot of sbc$plot()](comparison-to-rstan-sbc-sbc.png)
+
 
 Assess whether the distributions of recovered ranks are similar
 
-```{r eval = FALSE}
+```{r}
 library(purrr)
 x <- 
   map(sbc$calibrations, 'ranks') %>%
@@ -126,17 +137,9 @@ qqplot(x, y, xlab = 'SBC', ylab = 'rstan')
 abline(a = 0, b = 1, col = 'red')
 ```
 
-![qqplot](comparison-to-rstan-sbc-qq.png)
 
-```{r eval = FALSE}
+```{r}
 wilcox.test(x, y)
 ```
-```r
-#> 
-#> 	Wilcoxon rank sum test with continuity correction
-#> 
-#> data:  x and y
-#> W = 30819, p-value = 0.2443
-#> alternative hypothesis: true location shift is not equal to 0
-```
+
 

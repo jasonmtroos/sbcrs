@@ -23,7 +23,7 @@ library(rstan)
 ```
 
 
-```{r include = FALSE, echo = FALSE, message = FALSE, eval = FALSE}
+```{r include = FALSE, echo = FALSE, message = FALSE}
 rstan::rstan_options("auto_write" = TRUE)
 get_compiled_stan_model <- function(filename) {
   m <- NULL
@@ -64,7 +64,7 @@ funnel <- stan_model(file = system.file('stan', 'funnel.stan', package = 'sbcrs'
 
 Create an SBC object called `sbc1` with functions to: 1) generate simulated values of `x` and `y`, and 2) call `rstan::sampling`, passing in `funnel` as the model to be sampled.
 
-```{r eval = FALSE}
+```{r}
 sbc1 <- SBC$new(
   params = function(seed, data) {
     set.seed(seed + 10)
@@ -77,39 +77,26 @@ sbc1 <- SBC$new(
   })
 ```
 
-Perform the calibration (this may take a long time, so take advantage of parallelization).
+Calibration involves generating data and parameters, and sampling from a Stan model many times. To speed up this process, take advantage of all of your machine's cores.
 
-```{r eval = FALSE}
+```{r}
 doParallel::registerDoParallel(cores = parallel::detectCores())
+```
+
+```{r echo =  FALSE}
+if (!identical(Sys.getenv("NOT_CRAN"), "true") && !interactive())
+  doParallel::registerDoParallel(cores = 2)
+```
+
+
+Perform the calibration.
+
+```{r}
 sbc1$calibrate(N = 256, L = 50)
 sbc1$plot()
-```
-
-![plot of sbc1$plot()](funnel-sbc1.png)
-
-
-```{r eval = FALSE}
 sbc1$plot('y')
-```
-
-![plot of sbc1$plot('y')](funnel-sbc1-y.png)
-
-```{r fig.width=6, fig.height=6, eval = FALSE}
 sbc1$plot('x')
-```
-
-![plot of sbc1$plot('x')](funnel-sbc1-x.png)
-
-```{r eval = FALSE}
 sbc1$summary()
-```
-
-```r
-#> 
-#> 
-#>    iq expected.outside actual.outside
-#>  0.50             0.50      0.7647059
-#>  0.98             0.02      0.4117647
 ```
 
 
@@ -129,7 +116,7 @@ funnel_reparameterized <- stan_model(file = system.file('stan', 'funnel_reparame
 
 Create an SBC object called `sbc2a` with functions to: 1) generate simulated values of `x_raw` and `y_raw`, and 2) call `rstan::sampling`, passing in `funnel_reparameterized` as the model to be sampled.
 
-```{r eval = FALSE}
+```{r}
 sbc2a <- SBC$new(
   params = function(seed, data) {
     set.seed(seed + 10)
@@ -144,40 +131,17 @@ sbc2a <- SBC$new(
 
 Perform the calibration.
 
-```{r eval = FALSE}
+```{r}
 sbc2a$calibrate(N = 256, L = 50)
 sbc2a$plot()
-```
-
-![plot of sbc2a$plot()](funnel-sbc2a.png)
-
-```{r eval = FALSE}
 sbc2a$plot('y_raw')
-```
-
-![plot of sbc2a$plot('y_raw')](funnel-sbc2a-y_raw.png)
-
-```{r fig.width=6, fig.height=6, eval = FALSE}
 sbc2a$plot('x_raw')
-```
-
-![plot of sbc2a$plot('x_raw')](funnel-sbc2a-x_raw.png)
-
-```{r eval = FALSE}
 sbc2a$summary()
-```
-
-```r
-#>
-#> 
-#>    iq expected.outside actual.outside
-#>  0.50             0.50      0.4313725
-#>  0.98             0.02      0.0000000
 ```
 
 Rather than comparing simulated and sampled values of `x_raw` and `y_raw`, we might instead wish to compare `x` and `y`. In the code that creates the object `sbc2b`, note that the `params()` function returns a list with named values `x` and `y`. Hence the calibration is performed on those parameters.
 
-```{r eval = FALSE}
+```{r}
 sbc2b <- SBC$new(
   params = function(seed, data) {
     set.seed(seed + 10)
@@ -194,34 +158,10 @@ sbc2b <- SBC$new(
 
 Perform the calibration.
 
-```{r eval = FALSE}
+```{r}
 sbc2b$calibrate(N = 256, L = 50)
 sbc2b$plot()
-```
-
-![plot of sbc2b$plot()](funnel-sbc2b.png)
-
-```{r eval = FALSE}
 sbc2b$plot('y')
-```
-
-![plot of sbc2b$plot('y')](funnel-sbc2b-y.png)
-
-```{r fig.width=6, fig.height=6, eval = FALSE}
 sbc2b$plot('x')
-```
-
-![plot of sbc2b$plot('x')](funnel-sbc2b-x.png)
-
-```{r eval = FALSE}
 sbc2b$summary()
 ```
-
-```r
-#>
-#> 
-#>    iq expected.outside actual.outside
-#>  0.50             0.50      0.3921569
-#>  0.98             0.02      0.0000000
-```
-
