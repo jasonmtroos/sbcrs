@@ -1,10 +1,5 @@
 ---
 title: "Neal's Funnel"
-output: rmarkdown::html_vignette
-vignette: >
-  %\VignetteIndexEntry{funnel}
-  %\VignetteEncoding{UTF-8}
-  %\VignetteEngine{knitr::rmarkdown}
 editor_options: 
   chunk_output_type: console
 ---
@@ -81,11 +76,6 @@ Calibration involves generating data and parameters, and sampling from a Stan mo
 
 ```{r}
 doParallel::registerDoParallel(cores = parallel::detectCores())
-```
-
-```{r echo =  FALSE}
-if (!identical(Sys.getenv("NOT_CRAN"), "true") && !interactive())
-  doParallel::registerDoParallel(cores = 2)
 ```
 
 

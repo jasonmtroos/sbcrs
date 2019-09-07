@@ -18,3 +18,4 @@
 ^pkgdown$
 ^codecov\.yml$
 ^\.covrignore$
+^vignettes/funnel\.Rmd$

@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">sbcrs</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.0.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.0.9001</span>
       </span>
     </div>
 
@@ -131,27 +131,22 @@ model {
 <a class="sourceLine" id="cb4-8" data-line-number="8">  <span class="dt">sampling =</span> <span class="cf">function</span>(seed, data, params, modeled_data, iters) {</a>
 <a class="sourceLine" id="cb4-9" data-line-number="9">    <span class="kw"><a href="https://rdrr.io/pkg/rstan/man/stanmodel-method-sampling.html">sampling</a></span>(funnel, <span class="dt">data =</span> data, <span class="dt">seed =</span> seed, <span class="dt">chains =</span> <span class="dv">1</span>, <span class="dt">iter =</span> <span class="dv">2</span> <span class="op">*</span><span class="st"> </span>iters, <span class="dt">warmup =</span> iters)</a>
 <a class="sourceLine" id="cb4-10" data-line-number="10">  })</a></code></pre></div>
-<p>Perform the calibration (this may take a long time, so take advantage of parallelization).</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1">doParallel<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/doParallel/man/registerDoParallel.html">registerDoParallel</a></span>(<span class="dt">cores =</span> parallel<span class="op">::</span><span class="kw"><a href="https://rdrr.io/r/parallel/detectCores.html">detectCores</a></span>())</a>
-<a class="sourceLine" id="cb5-2" data-line-number="2">sbc1<span class="op">$</span><span class="kw">calibrate</span>(<span class="dt">N =</span> <span class="dv">256</span>, <span class="dt">L =</span> <span class="dv">50</span>)</a>
-<a class="sourceLine" id="cb5-3" data-line-number="3">sbc1<span class="op">$</span><span class="kw"><a href="https://rdrr.io/r/graphics/plot.html">plot</a></span>()</a></code></pre></div>
-<div class="figure">
-<img src="../../../../Dropbox%20(Erasmus%20Universiteit%20Rotterdam)/Code/sbcrs/vignettes/funnel-sbc1.png" alt="plot of sbc1$plot()"><p class="caption">plot of sbc1$plot()</p>
-</div>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1">sbc1<span class="op">$</span><span class="kw"><a href="https://rdrr.io/r/graphics/plot.html">plot</a></span>(<span class="st">'y'</span>)</a></code></pre></div>
-<div class="figure">
-<img src="../../../../Dropbox%20(Erasmus%20Universiteit%20Rotterdam)/Code/sbcrs/vignettes/funnel-sbc1-y.png" alt="plot of sbc1$plot(‘y’)"><p class="caption">plot of sbc1$plot(‘y’)</p>
-</div>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1">sbc1<span class="op">$</span><span class="kw"><a href="https://rdrr.io/r/graphics/plot.html">plot</a></span>(<span class="st">'x'</span>)</a></code></pre></div>
-<div class="figure">
-<img src="../../../../Dropbox%20(Erasmus%20Universiteit%20Rotterdam)/Code/sbcrs/vignettes/funnel-sbc1-x.png" alt="plot of sbc1$plot(‘x’)"><p class="caption">plot of sbc1$plot(‘x’)</p>
-</div>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" data-line-number="1">sbc1<span class="op">$</span><span class="kw"><a href="https://rdrr.io/r/base/summary.html">summary</a></span>()</a></code></pre></div>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" data-line-number="1"><span class="co">#&gt; </span></a>
+<p>Calibration involves generating data and parameters, and sampling from a Stan model many times. To speed up this process, take advantage of all of your machine’s cores.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1">doParallel<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/doParallel/man/registerDoParallel.html">registerDoParallel</a></span>(<span class="dt">cores =</span> parallel<span class="op">::</span><span class="kw"><a href="https://rdrr.io/r/parallel/detectCores.html">detectCores</a></span>())</a></code></pre></div>
+<p>Perform the calibration.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1">sbc1<span class="op">$</span><span class="kw">calibrate</span>(<span class="dt">N =</span> <span class="dv">256</span>, <span class="dt">L =</span> <span class="dv">50</span>)</a>
+<a class="sourceLine" id="cb6-2" data-line-number="2">sbc1<span class="op">$</span><span class="kw"><a href="https://rdrr.io/r/graphics/plot.html">plot</a></span>()</a></code></pre></div>
+<p><img src="funnel_files/figure-html/unnamed-chunk-7-1.png" width="700"></p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1">sbc1<span class="op">$</span><span class="kw"><a href="https://rdrr.io/r/graphics/plot.html">plot</a></span>(<span class="st">'y'</span>)</a></code></pre></div>
+<p><img src="funnel_files/figure-html/unnamed-chunk-7-2.png" width="700"></p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" data-line-number="1">sbc1<span class="op">$</span><span class="kw"><a href="https://rdrr.io/r/graphics/plot.html">plot</a></span>(<span class="st">'x'</span>)</a></code></pre></div>
+<p><img src="funnel_files/figure-html/unnamed-chunk-7-3.png" width="700"></p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" data-line-number="1">sbc1<span class="op">$</span><span class="kw"><a href="https://rdrr.io/r/base/summary.html">summary</a></span>()</a>
 <a class="sourceLine" id="cb9-2" data-line-number="2"><span class="co">#&gt; </span></a>
-<a class="sourceLine" id="cb9-3" data-line-number="3"><span class="co">#&gt;    iq expected.outside actual.outside</span></a>
-<a class="sourceLine" id="cb9-4" data-line-number="4"><span class="co">#&gt;  0.50             0.50      0.7647059</span></a>
-<a class="sourceLine" id="cb9-5" data-line-number="5"><span class="co">#&gt;  0.98             0.02      0.4117647</span></a></code></pre></div>
+<a class="sourceLine" id="cb9-3" data-line-number="3"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb9-4" data-line-number="4"><span class="co">#&gt;    iq expected.outside actual.outside</span></a>
+<a class="sourceLine" id="cb9-5" data-line-number="5"><span class="co">#&gt;  0.50             0.50      0.7647059</span></a>
+<a class="sourceLine" id="cb9-6" data-line-number="6"><span class="co">#&gt;  0.98             0.02      0.4117647</span></a></code></pre></div>
 <p>The model is evidently poorly conditioned.</p>
 <p>The reparameterized model is based on new primitives: <code>x_raw</code> and <code>y_raw</code>, which follow independent, standard normal distributions. From these newly defined primitives, it then builds up <code>x</code> and <code>y</code> based on their analytical definitions (see above). The stan code for the reparameterized model is:</p>
 <pre><code>parameters {
@@ -185,56 +180,44 @@ model {
 <p>Perform the calibration.</p>
 <div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" data-line-number="1">sbc2a<span class="op">$</span><span class="kw">calibrate</span>(<span class="dt">N =</span> <span class="dv">256</span>, <span class="dt">L =</span> <span class="dv">50</span>)</a>
 <a class="sourceLine" id="cb13-2" data-line-number="2">sbc2a<span class="op">$</span><span class="kw"><a href="https://rdrr.io/r/graphics/plot.html">plot</a></span>()</a></code></pre></div>
-<div class="figure">
-<img src="../../../../Dropbox%20(Erasmus%20Universiteit%20Rotterdam)/Code/sbcrs/vignettes/funnel-sbc2a.png" alt="plot of sbc2a$plot()"><p class="caption">plot of sbc2a$plot()</p>
-</div>
+<p><img src="funnel_files/figure-html/unnamed-chunk-11-1.png" width="700"></p>
 <div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb14-1" data-line-number="1">sbc2a<span class="op">$</span><span class="kw"><a href="https://rdrr.io/r/graphics/plot.html">plot</a></span>(<span class="st">'y_raw'</span>)</a></code></pre></div>
-<div class="figure">
-<img src="../../../../Dropbox%20(Erasmus%20Universiteit%20Rotterdam)/Code/sbcrs/vignettes/funnel-sbc2a-y_raw.png" alt="plot of sbc2a$plot(‘y_raw’)"><p class="caption">plot of sbc2a$plot(‘y_raw’)</p>
-</div>
+<p><img src="funnel_files/figure-html/unnamed-chunk-11-2.png" width="700"></p>
 <div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb15-1" data-line-number="1">sbc2a<span class="op">$</span><span class="kw"><a href="https://rdrr.io/r/graphics/plot.html">plot</a></span>(<span class="st">'x_raw'</span>)</a></code></pre></div>
-<div class="figure">
-<img src="../../../../Dropbox%20(Erasmus%20Universiteit%20Rotterdam)/Code/sbcrs/vignettes/funnel-sbc2a-x_raw.png" alt="plot of sbc2a$plot(‘x_raw’)"><p class="caption">plot of sbc2a$plot(‘x_raw’)</p>
-</div>
-<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb16-1" data-line-number="1">sbc2a<span class="op">$</span><span class="kw"><a href="https://rdrr.io/r/base/summary.html">summary</a></span>()</a></code></pre></div>
-<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb17-1" data-line-number="1"><span class="co">#&gt;</span></a>
-<a class="sourceLine" id="cb17-2" data-line-number="2"><span class="co">#&gt; </span></a>
-<a class="sourceLine" id="cb17-3" data-line-number="3"><span class="co">#&gt;    iq expected.outside actual.outside</span></a>
-<a class="sourceLine" id="cb17-4" data-line-number="4"><span class="co">#&gt;  0.50             0.50      0.4313725</span></a>
-<a class="sourceLine" id="cb17-5" data-line-number="5"><span class="co">#&gt;  0.98             0.02      0.0000000</span></a></code></pre></div>
+<p><img src="funnel_files/figure-html/unnamed-chunk-11-3.png" width="700"></p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb16-1" data-line-number="1">sbc2a<span class="op">$</span><span class="kw"><a href="https://rdrr.io/r/base/summary.html">summary</a></span>()</a>
+<a class="sourceLine" id="cb16-2" data-line-number="2"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb16-3" data-line-number="3"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb16-4" data-line-number="4"><span class="co">#&gt;    iq expected.outside actual.outside</span></a>
+<a class="sourceLine" id="cb16-5" data-line-number="5"><span class="co">#&gt;  0.50             0.50      0.4313725</span></a>
+<a class="sourceLine" id="cb16-6" data-line-number="6"><span class="co">#&gt;  0.98             0.02      0.0000000</span></a></code></pre></div>
 <p>Rather than comparing simulated and sampled values of <code>x_raw</code> and <code>y_raw</code>, we might instead wish to compare <code>x</code> and <code>y</code>. In the code that creates the object <code>sbc2b</code>, note that the <code>params()</code> function returns a list with named values <code>x</code> and <code>y</code>. Hence the calibration is performed on those parameters.</p>
-<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb18-1" data-line-number="1">sbc2b &lt;-<span class="st"> </span>SBC<span class="op">$</span><span class="kw">new</span>(</a>
-<a class="sourceLine" id="cb18-2" data-line-number="2">  <span class="dt">params =</span> <span class="cf">function</span>(seed, data) {</a>
-<a class="sourceLine" id="cb18-3" data-line-number="3">    <span class="kw"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span>(seed <span class="op">+</span><span class="st"> </span><span class="dv">10</span>)</a>
-<a class="sourceLine" id="cb18-4" data-line-number="4">    y_raw &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span>(<span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">1</span>)</a>
-<a class="sourceLine" id="cb18-5" data-line-number="5">    x_raw &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span>(<span class="dv">9</span>, <span class="dv">0</span>, <span class="dv">1</span>)</a>
-<a class="sourceLine" id="cb18-6" data-line-number="6">    y &lt;-<span class="st"> </span><span class="fl">3.0</span> <span class="op">*</span><span class="st"> </span>y_raw;</a>
-<a class="sourceLine" id="cb18-7" data-line-number="7">    x &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/Log.html">exp</a></span>(y<span class="op">/</span><span class="dv">2</span>) <span class="op">*</span><span class="st"> </span>x_raw;</a>
-<a class="sourceLine" id="cb18-8" data-line-number="8">    <span class="kw"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="dt">x =</span> x, <span class="dt">y =</span> y)</a>
-<a class="sourceLine" id="cb18-9" data-line-number="9">  }, </a>
-<a class="sourceLine" id="cb18-10" data-line-number="10">  <span class="dt">sampling =</span> <span class="cf">function</span>(seed, data, params, modeled_data, iters) {</a>
-<a class="sourceLine" id="cb18-11" data-line-number="11">    <span class="kw"><a href="https://rdrr.io/pkg/rstan/man/stanmodel-method-sampling.html">sampling</a></span>(funnel_reparameterized, <span class="dt">data =</span> data, <span class="dt">seed =</span> seed, <span class="dt">chains =</span> <span class="dv">1</span>, <span class="dt">iter =</span> <span class="dv">2</span> <span class="op">*</span><span class="st"> </span>iters, <span class="dt">warmup =</span> iters)</a>
-<a class="sourceLine" id="cb18-12" data-line-number="12">  })</a></code></pre></div>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb17-1" data-line-number="1">sbc2b &lt;-<span class="st"> </span>SBC<span class="op">$</span><span class="kw">new</span>(</a>
+<a class="sourceLine" id="cb17-2" data-line-number="2">  <span class="dt">params =</span> <span class="cf">function</span>(seed, data) {</a>
+<a class="sourceLine" id="cb17-3" data-line-number="3">    <span class="kw"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span>(seed <span class="op">+</span><span class="st"> </span><span class="dv">10</span>)</a>
+<a class="sourceLine" id="cb17-4" data-line-number="4">    y_raw &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span>(<span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">1</span>)</a>
+<a class="sourceLine" id="cb17-5" data-line-number="5">    x_raw &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span>(<span class="dv">9</span>, <span class="dv">0</span>, <span class="dv">1</span>)</a>
+<a class="sourceLine" id="cb17-6" data-line-number="6">    y &lt;-<span class="st"> </span><span class="fl">3.0</span> <span class="op">*</span><span class="st"> </span>y_raw;</a>
+<a class="sourceLine" id="cb17-7" data-line-number="7">    x &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/Log.html">exp</a></span>(y<span class="op">/</span><span class="dv">2</span>) <span class="op">*</span><span class="st"> </span>x_raw;</a>
+<a class="sourceLine" id="cb17-8" data-line-number="8">    <span class="kw"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="dt">x =</span> x, <span class="dt">y =</span> y)</a>
+<a class="sourceLine" id="cb17-9" data-line-number="9">  }, </a>
+<a class="sourceLine" id="cb17-10" data-line-number="10">  <span class="dt">sampling =</span> <span class="cf">function</span>(seed, data, params, modeled_data, iters) {</a>
+<a class="sourceLine" id="cb17-11" data-line-number="11">    <span class="kw"><a href="https://rdrr.io/pkg/rstan/man/stanmodel-method-sampling.html">sampling</a></span>(funnel_reparameterized, <span class="dt">data =</span> data, <span class="dt">seed =</span> seed, <span class="dt">chains =</span> <span class="dv">1</span>, <span class="dt">iter =</span> <span class="dv">2</span> <span class="op">*</span><span class="st"> </span>iters, <span class="dt">warmup =</span> iters)</a>
+<a class="sourceLine" id="cb17-12" data-line-number="12">  })</a></code></pre></div>
 <p>Perform the calibration.</p>
-<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb19-1" data-line-number="1">sbc2b<span class="op">$</span><span class="kw">calibrate</span>(<span class="dt">N =</span> <span class="dv">256</span>, <span class="dt">L =</span> <span class="dv">50</span>)</a>
-<a class="sourceLine" id="cb19-2" data-line-number="2">sbc2b<span class="op">$</span><span class="kw"><a href="https://rdrr.io/r/graphics/plot.html">plot</a></span>()</a></code></pre></div>
-<div class="figure">
-<img src="../../../../Dropbox%20(Erasmus%20Universiteit%20Rotterdam)/Code/sbcrs/vignettes/funnel-sbc2b.png" alt="plot of sbc2b$plot()"><p class="caption">plot of sbc2b$plot()</p>
-</div>
-<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb20-1" data-line-number="1">sbc2b<span class="op">$</span><span class="kw"><a href="https://rdrr.io/r/graphics/plot.html">plot</a></span>(<span class="st">'y'</span>)</a></code></pre></div>
-<div class="figure">
-<img src="../../../../Dropbox%20(Erasmus%20Universiteit%20Rotterdam)/Code/sbcrs/vignettes/funnel-sbc2b-y.png" alt="plot of sbc2b$plot(‘y’)"><p class="caption">plot of sbc2b$plot(‘y’)</p>
-</div>
-<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb21-1" data-line-number="1">sbc2b<span class="op">$</span><span class="kw"><a href="https://rdrr.io/r/graphics/plot.html">plot</a></span>(<span class="st">'x'</span>)</a></code></pre></div>
-<div class="figure">
-<img src="../../../../Dropbox%20(Erasmus%20Universiteit%20Rotterdam)/Code/sbcrs/vignettes/funnel-sbc2b-x.png" alt="plot of sbc2b$plot(‘x’)"><p class="caption">plot of sbc2b$plot(‘x’)</p>
-</div>
-<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb22-1" data-line-number="1">sbc2b<span class="op">$</span><span class="kw"><a href="https://rdrr.io/r/base/summary.html">summary</a></span>()</a></code></pre></div>
-<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb23-1" data-line-number="1"><span class="co">#&gt;</span></a>
-<a class="sourceLine" id="cb23-2" data-line-number="2"><span class="co">#&gt; </span></a>
-<a class="sourceLine" id="cb23-3" data-line-number="3"><span class="co">#&gt;    iq expected.outside actual.outside</span></a>
-<a class="sourceLine" id="cb23-4" data-line-number="4"><span class="co">#&gt;  0.50             0.50      0.3921569</span></a>
-<a class="sourceLine" id="cb23-5" data-line-number="5"><span class="co">#&gt;  0.98             0.02      0.0000000</span></a></code></pre></div>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb18-1" data-line-number="1">sbc2b<span class="op">$</span><span class="kw">calibrate</span>(<span class="dt">N =</span> <span class="dv">256</span>, <span class="dt">L =</span> <span class="dv">50</span>)</a>
+<a class="sourceLine" id="cb18-2" data-line-number="2">sbc2b<span class="op">$</span><span class="kw"><a href="https://rdrr.io/r/graphics/plot.html">plot</a></span>()</a></code></pre></div>
+<p><img src="funnel_files/figure-html/unnamed-chunk-13-1.png" width="700"></p>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb19-1" data-line-number="1">sbc2b<span class="op">$</span><span class="kw"><a href="https://rdrr.io/r/graphics/plot.html">plot</a></span>(<span class="st">'y'</span>)</a></code></pre></div>
+<p><img src="funnel_files/figure-html/unnamed-chunk-13-2.png" width="700"></p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb20-1" data-line-number="1">sbc2b<span class="op">$</span><span class="kw"><a href="https://rdrr.io/r/graphics/plot.html">plot</a></span>(<span class="st">'x'</span>)</a></code></pre></div>
+<p><img src="funnel_files/figure-html/unnamed-chunk-13-3.png" width="700"></p>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb21-1" data-line-number="1">sbc2b<span class="op">$</span><span class="kw"><a href="https://rdrr.io/r/base/summary.html">summary</a></span>()</a>
+<a class="sourceLine" id="cb21-2" data-line-number="2"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb21-3" data-line-number="3"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb21-4" data-line-number="4"><span class="co">#&gt;    iq expected.outside actual.outside</span></a>
+<a class="sourceLine" id="cb21-5" data-line-number="5"><span class="co">#&gt;  0.50             0.50      0.3921569</span></a>
+<a class="sourceLine" id="cb21-6" data-line-number="6"><span class="co">#&gt;  0.98             0.02      0.0000000</span></a></code></pre></div>
 <div class="footnotes">
 <hr>
 <ol>
