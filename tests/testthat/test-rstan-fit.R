@@ -12,7 +12,6 @@ test_that("rstan fit", {
   }
 
   new_sbc_for_testing <- function(.n_obs, .n_groups, .n_types) {
-    stopifnot(.n_groups > 0L && .n_types > 0L)
     SBC$new(
       data = function(seed) {
         set.seed(seed + 10)
@@ -65,11 +64,14 @@ test_that("rstan fit", {
     testthat::expect_length(sbc$calibrations, N)
     purrr::walk(sbc$calibrations, ~ check_param_len(.x))
     testthat::expect_s3_class(sbc$summary(), "data.frame")
-    testthat::expect_s3_class(sbc$summary("mu"), "data.frame")
+    if (length(sbc$calibrations[[1]]$params$mu) > 0L)
+      testthat::expect_s3_class(sbc$summary("mu"), "data.frame")
     gg <- sbc$plot()
     testthat::expect_s3_class(gg, "ggplot")
-    gg <- sbc$plot("mu")
-    testthat::expect_s3_class(gg, "ggplot")
+    if (length(sbc$calibrations[[1]]$params$mu) > 0L) {
+      gg <- sbc$plot("mu")
+      testthat::expect_s3_class(gg, "ggplot")
+    }
     
     if (keep_stan_fit) {
       testthat::expect_s4_class(sbc$calibrations[[1]]$samples, "stanfit")
@@ -78,6 +80,12 @@ test_that("rstan fit", {
     }
     invisible(NULL)
   }
+  sbc <- new_sbc_for_testing(0, 0, 0)
+  tests_for_sbc(sbc, 4, 10)
+  
+  sbc <- new_sbc_for_testing(0, 0, 1)
+  tests_for_sbc(sbc, 4, 10)
+  
   sbc <- new_sbc_for_testing(0, 1, 1)
   tests_for_sbc(sbc, 4, 10)
 

@@ -157,6 +157,7 @@ SBC <- R6::R6Class(
       },
     .summary_data = function(var = NULL) {
       q <- purrr::map(self$calibrations, "ranks")
+      q <- purrr::map(q, ~.x[!purrr::map_lgl(.x, is.null)])
       q <- purrr::imap(
         purrr::transpose(q),
         ~ matrix(purrr::simplify(.x),
