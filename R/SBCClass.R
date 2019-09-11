@@ -216,6 +216,13 @@ SBC <- R6::R6Class(
 
       invisible(self)
     },
+    ranks = function(var = NULL) {
+      if (is.null(private$.N)) {
+        return(invisible(NULL))
+      }
+      sd <- private$.summary_data(var)
+      sd$qd$r
+    },
     summary = function(var = NULL) {
       if (is.null(private$.N)) {
         return(invisible(NULL))

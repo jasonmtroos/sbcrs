@@ -72,7 +72,15 @@ test_that("rstan fit", {
       gg <- sbc$plot("mu")
       testthat::expect_s3_class(gg, "ggplot")
     }
-    
+    n_r <- sbc$calibrations[[1]]$ranks %>% unlist() %>% length()
+    r <- sbc$ranks() %>% sort()
+    testthat::expect_length(r, n_r * N)
+    r0 <- purrr::map(sbc$calibrations, 'ranks') %>%
+      purrr::map(unlist) %>%
+      unlist() %>%
+      unname() %>%
+      sort()
+    testthat::expect_equal(r, r0)
     if (keep_stan_fit) {
       testthat::expect_s4_class(sbc$calibrations[[1]]$samples, "stanfit")
     } else {
