@@ -306,7 +306,7 @@ SBC <- R6::R6Class(
         tidyr::crossing(r = c(0, L))
 
       plotfun <- function() {
-        ggplot2::ggplot(iqs, aes(
+        ggplot2::ggplot(iqs, ggplot2::aes(
           x = r, ymin = lo, ymax = hi, alpha = factor(iq))) +
           ggplot2::geom_ribbon(fill = "black") +
           ggplot2::stat_count(
