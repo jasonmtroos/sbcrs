@@ -58,9 +58,9 @@ test_that("rstan fit", {
       length(calib$params[[.x]])
     ))
   }
-  tests_for_sbc <- function(sbc, N, L, keep_stan_fit = TRUE) {
+  tests_for_sbc <- function(sbc, N, L, keep_stan_fit = TRUE, min_iterations = 1000) {
     testthat::expect_length(sbc$calibrations, 0)
-    sbc$calibrate(N, L, keep_stan_fit)
+    sbc$calibrate(N, L, keep_stan_fit, min_iterations = min_iterations)
     testthat::expect_length(sbc$calibrations, N)
     purrr::walk(sbc$calibrations, ~ check_param_len(.x))
     testthat::expect_s3_class(sbc$summary(), "data.frame")
@@ -96,6 +96,9 @@ test_that("rstan fit", {
   
   sbc <- new_sbc_for_testing(0, 1, 1)
   tests_for_sbc(sbc, 4, 10)
+
+  sbc <- new_sbc_for_testing(0, 1, 1)
+  tests_for_sbc(sbc, 4, 10, 100)
 
   sbc <- new_sbc_for_testing(0, 3, 4)
   tests_for_sbc(sbc, N = 4, L = 10, keep_stan_fit = FALSE)

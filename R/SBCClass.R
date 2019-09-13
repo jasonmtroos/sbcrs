@@ -81,12 +81,12 @@ SBC <- R6::R6Class(
     .N = NULL,
     .L = NULL,
     .new_calibration =
-      function(seed, L, keep_stan_fit) {
+      function(seed, L, keep_stan_fit, min_iterations) {
         data <- private$.data_fun(seed)
         params <- private$.params_fun(seed, data)
         modeled_data <- private$.modeled_data_fun(seed, data, params)
 
-        iters <- 1000
+        iters <- min_iterations
         n_eff <- as.double(L) - .0001
 
         while (n_eff < L) {
@@ -191,18 +191,20 @@ SBC <- R6::R6Class(
         invisible(self)
       },
     calibrations = list(),
-    calibrate = function(N, L, keep_stan_fit = TRUE) {
-      stopifnot(N > 0L && L > 1L)
+    calibrate = function(N, L, keep_stan_fit = TRUE, min_iterations = 1000) {
+      stopifnot(N > 0L && L > 1L && min_iterations > 0L)
       if (foreach::getDoParWorkers() == 1) {
         self$calibrations <- purrr::map(
           seq_len(N), ~ private$.new_calibration(
-            seed = .x, L = L, keep_stan_fit = keep_stan_fit))
+            seed = .x, L = L, keep_stan_fit = keep_stan_fit,
+            min_iterations = min_iterations))
       } else {
         `%dopar%` <- foreach::`%dopar%`
         self$calibrations <- foreach::foreach(
           seed = seq_len(N)) %dopar%
           private$.new_calibration(
-            seed = seed, L = L, keep_stan_fit = keep_stan_fit)
+            seed = seed, L = L, keep_stan_fit = keep_stan_fit,
+            min_iterations = min_iterations)
       }
 
       smallest_n_eff <- min(purrr::map_dbl(
